@@ -7,7 +7,7 @@ define zpr::job (
   $share         = undef,
   $share_nfs     = undef,
   $hour          = '0',
-  $minute        = "fqdn_rand( 59 )",
+  $minute        = fqdn_rand(59),
   $keep          = '15', # 14 snapshots
   $ensure        = present,
   $compression   = undef,
@@ -19,7 +19,7 @@ define zpr::job (
   $target        = undef, #to override zfs::rotate title
   $files_source  = $::fqdn,
   $rsync_hour    = '1',
-  $rsync_minute  = "fqdn_rand( 59 )",
+  $rsync_minute  = fqdn_rand(59),
   $rsync_options = undef,
   $exclude       = undef,
 ) {
