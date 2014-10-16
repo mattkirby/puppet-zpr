@@ -3,6 +3,8 @@ class zpr::worker (
   $tag        = $::hostname
 ) {
 
+  include zpr::resource::backup_dir
+
   File <<| tag == $tag |>>
   Mount <<| tag == $tag |>> {
     options => 'rw'
