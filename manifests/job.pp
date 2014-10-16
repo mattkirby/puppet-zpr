@@ -1,6 +1,6 @@
 # A class for managing backup volumes
 define zpr::job (
-  $rsync_files,
+  $files,
   $server,
   $parent,
   $snapshot      = 'on',
@@ -17,7 +17,7 @@ define zpr::job (
   $backup_dir    = '/srv/backup',
   $quota         = '100G',
   $target        = undef, #to override zfs::rotate title
-  $rsync_url     = $::fqdn,
+  $files_source  = $::fqdn,
   $rsync_hour    = '1',
   $rsync_minute  = "fqdn_rand( 59 )",
   $rsync_options = undef,
@@ -77,8 +77,8 @@ define zpr::job (
   }
 
   @@zpr::rsync { $title:
-    source_url    => $rsync_url,
-    files         => $rsync_files,
+    source_url    => $files_source,
+    files         => $files,
     dest_folder   => "${backup_dir}/${title}",
     hour          => $rsync_hour,
     minute        => $rsync_minute,

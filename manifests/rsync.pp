@@ -13,13 +13,13 @@ define zpr::rsync (
   $key_path       = '/var/lib/backup/.ssh/id_rsa',
   $ssh_options    = 'ssh -o StrictHostKeyChecking=no -i',
   $task_spooler   = '/usr/bin/tsp',
-  $exclude_dir    = undef
+  $exclude        = undef
 ) {
 
   include zpr::resource::task_spooler
 
-  if ( $exclude_dir ) {
-    $rsync_command = "${task_spooler} ${rsync} -${rsync_options} ${delete} --exclude '${exclude_dir}' -e \"${ssh_options} ${key_path}\" --rsync-path=\"${rsync_path}\" ${user}@${source_url}:${source_folder} ${dest_folder}"
+  if ( $exclude ) {
+    $rsync_command = "${task_spooler} ${rsync} -${rsync_options} ${delete} --exclude '${exclude}' -e \"${ssh_options} ${key_path}\" --rsync-path=\"${rsync_path}\" ${user}@${source_url}:${source_folder} ${dest_folder}"
   }
   else {
     $rsync_command = "${task_spooler} -${rsync_options} ${delete} -e \"${ssh_options} ${key_path}\" --rsync-path=\"${rsync_path}\" ${user}@${source_url}:${source_folder} ${dest_folder}"
