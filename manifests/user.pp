@@ -5,7 +5,7 @@ class zpr::user {
   $user   = hiera('zpr::user', 'zpr_proxy')
   $group  = $user
   $home   = hiera('zpr::home', '/var/lib/zpr')
-  $uid    = '50333'
+  $uid    = '50555'
   $gid    = $uid
   $tag    = $::hostname
 
