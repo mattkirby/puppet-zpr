@@ -21,7 +21,7 @@ define zpr::job (
   $rsync_hour    = '1',
   $rsync_minute  = "fqdn_rand( 59 )",
   $rsync_options = undef,
-  $exclude_dir   = undef,
+  $exclude       = undef,
 ) {
 
   $vol_name  = "${parent}/${title}"
@@ -82,7 +82,7 @@ define zpr::job (
     dest_folder   => "${backup_dir}/${title}",
     hour          => $rsync_hour,
     minute        => $rsync_minute,
-    exclude_dir   => $exclude_dir,
+    exclude       => $exclude,
     rsync_options => $rsync_options,
     tag           => $zpr_tag
   }
