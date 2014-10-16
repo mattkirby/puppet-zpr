@@ -33,7 +33,7 @@ class zpr::user {
     entry => "${user} ALL=(ALL) NOPASSWD:/usr/bin/rsync"
   }
 
-  class { 'zpr::resource::generate_ssh_key':
+  zpr::resource::generate_ssh_key { $user:
     user  => $user,
     group => $user,
     home  => $home,
