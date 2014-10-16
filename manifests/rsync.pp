@@ -7,7 +7,7 @@ define zpr::rsync (
   $delete         = '--delete-after',
   $rsync_path     = 'sudo rsync',
   $rsync          = '/usr/bin/rsync',
-  $user           = 'backup_proxy',
+  $user           = 'zpr_proxy',
   $hour           = '0',
   $minute         = '15',
   $key_path       = '/var/lib/backup/.ssh/id_rsa',

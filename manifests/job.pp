@@ -3,25 +3,25 @@ define zpr::job (
   $files,
   $server,
   $parent,
-  $snapshot      = 'on',
-  $share         = undef,
-  $share_nfs     = undef,
-  $hour          = '0',
-  $minute        = fqdn_rand(59),
-  $keep          = '15', # 14 snapshots
   $ensure        = present,
-  $compression   = undef,
-  $zfs_tag       = 'stor-backups1',
-  $zpr_tag       = 'backup-proxy1-prod',
-  $readonly_tag  = 'crashplan-backups1',
+  $files_source  = $::fqdn,
+  $storage_tag   = 'storage',
+  $worker_tag    = 'worker',
+  $readonly_tag  = 'readonly',
+  $snapshot      = 'on',
+  $keep          = '15', # 14 snapshots
   $backup_dir    = '/srv/backup',
   $quota         = '100G',
+  $compression   = undef,
+  $share         = undef,
+  $share_nfs     = undef,
   $target        = undef, #to override zfs::rotate title
-  $files_source  = $::fqdn,
-  $rsync_hour    = '1',
-  $rsync_minute  = fqdn_rand(59),
   $rsync_options = undef,
   $exclude       = undef,
+  $hour          = '0',
+  $minute        = fqdn_rand(59),
+  $rsync_hour    = '1',
+  $rsync_minute  = fqdn_rand(59)
 ) {
 
   $vol_name  = "${parent}/${title}"
@@ -32,7 +32,7 @@ define zpr::job (
   if $snapshot {
     @@zfs::snapshot { $title:
       target => $parent,
-      tag    => $zfs_tag
+      tag    => $storage_tag
     }
   }
 
@@ -40,7 +40,7 @@ define zpr::job (
     @@zfs::share { $title:
       share  => $share,
       parent => $parent,
-      tag    => $zfs_tag
+      tag    => $storage_tag
     }
   }
 
@@ -51,19 +51,19 @@ define zpr::job (
     compression => $compression,
     sharenfs    => $share_nfs,
     notify      => Exec[$chown_vol],
-    tag         => $zfs_tag
+    tag         => $storage_tag
   }
 
   @@exec { $chown_vol:
     path        => '/usr/bin',
     refreshonly => true,
     require     => Zfs[$vol_name],
-    tag         => $zfs_tag
+    tag         => $storage_tag
   }
 
   @@file { "${backup_dir}/${title}":
     ensure => directory,
-    tag    => [ $zpr_tag, $readonly_tag ]
+    tag    => [ $worker_tag, $readonly_tag ]
   }
 
   @@mount { "${backup_dir}/${title}":
@@ -73,7 +73,7 @@ define zpr::job (
     target  => '/etc/fstab',
     device  => "${server}:/${vol_name}",
     require => File["${backup_dir}/${title}"],
-    tag     => [ $zpr_tag, $readonly_tag ]
+    tag     => [ $worker_tag, $readonly_tag ]
   }
 
   @@zpr::rsync { $title:
@@ -84,14 +84,14 @@ define zpr::job (
     minute        => $rsync_minute,
     exclude       => $exclude,
     rsync_options => $rsync_options,
-    tag           => $zpr_tag
+    tag           => $worker_tag
   }
 
   if $share {
     @@zfs::share { $title:
       share  => $share,
       parent => $parent,
-      tag    => $zfs_tag
+      tag    => $storage_tag
     }
   }
 }

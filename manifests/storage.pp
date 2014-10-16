@@ -1,6 +1,6 @@
 # Provides storage for zpr
-class zpr::stor (
-  $tag = $::hostname
+class zpr::storage (
+  $tag = 'storage'
 ) {
 
   Zfs <<| tag == $tag |>>

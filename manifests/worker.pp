@@ -1,6 +1,6 @@
 # A class to collect tasks to orchestrate zpr backup jobs
 class zpr::worker (
-  $tag        = $::hostname
+  $tag = 'worker'
 ) {
 
   include zpr::resource::backup_dir
