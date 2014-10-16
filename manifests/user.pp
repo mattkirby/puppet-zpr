@@ -1,13 +1,13 @@
 # A class that creates and manages a proxy user for zpr
 class zpr::user {
 
-  $ensure   = present
-  $user     = 'zpr_proxy'
-  $group    = $user
-  $home     = '/var/lib/zpr'
-  $uid      = '50333'
-  $gid      = $uid
-  $tag      = $::hostname
+  $ensure = present
+  $user   = hiera('zpr::user', 'zpr_proxy')
+  $group  = $user
+  $home   = hiera('zpr::home', '/var/lib/zpr')
+  $uid    = '50333'
+  $gid    = $uid
+  $tag    = $::hostname
 
   # For placement of keys manually
   $key_name = undef
@@ -31,6 +31,13 @@ class zpr::user {
   ssh::allowgroup { $group: }
   sudo::entry { "${user}_rsync":
     entry => "${user} ALL=(ALL) NOPASSWD:/usr/bin/rsync"
+  }
+
+  class { 'zpr::resource::generate_ssh_key':
+    user  => $user,
+    group => $user,
+    home  => $home,
+    bits  => '4096'
   }
 
   if ( $::zpr_ssh_pubkey ) {
