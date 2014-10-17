@@ -19,11 +19,13 @@ define zpr::rsync (
   include zpr::resource::task_spooler
 
   if ( $exclude ) {
-    $rsync_command = "${task_spooler} ${rsync} -${rsync_options} ${delete} --exclude '${exclude}' -e \"${ssh_options} ${key_path}\" --rsync-path=\"${rsync_path}\" ${user}@${source_url}:${source_folder} ${dest_folder}"
+    $exclude_dir = "--exclude '${exclude}'"
   }
   else {
-    $rsync_command = "${task_spooler} -${rsync_options} ${delete} -e \"${ssh_options} ${key_path}\" --rsync-path=\"${rsync_path}\" ${user}@${source_url}:${source_folder} ${dest_folder}"
+    $exclude_dir = undef
   }
+
+    $rsync_command = "${task_spooler} -${rsync_options} ${delete} ${exclude_dir} -e \"${ssh_options} ${key_path}\" --rsync-path=\"${rsync_path}\" ${user}@${source_url}:${files} ${dest_folder}"
 
   cron { "${title}_rsync_backup":
     command => $rsync_command,
