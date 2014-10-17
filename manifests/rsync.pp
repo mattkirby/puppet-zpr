@@ -25,7 +25,7 @@ define zpr::rsync (
     $exclude_dir = undef
   }
 
-    $rsync_command = "${task_spooler} -${rsync_options} ${delete} ${exclude_dir} -e \"${ssh_options} ${key_path}\" --rsync-path=\"${rsync_path}\" ${user}@${source_url}:${files} ${dest_folder}"
+    $rsync_command = "${task_spooler} ${rsync} -${rsync_options} ${delete} ${exclude_dir} -e \"${ssh_options} ${key_path}\" --rsync-path=\"${rsync_path}\" ${user}@${source_url}:${files} ${dest_folder}"
 
   cron { "${title}_rsync_backup":
     command => $rsync_command,
