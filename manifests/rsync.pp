@@ -10,11 +10,14 @@ define zpr::rsync (
   $user           = 'zpr_proxy',
   $hour           = '0',
   $minute         = '15',
-  $key_path       = '/var/lib/backup/.ssh/id_rsa',
+  $key_path       = '/var/lib/zpr/.ssh',
+  $key_name       = 'id_rsa',
   $ssh_options    = 'ssh -o StrictHostKeyChecking=no -i',
   $task_spooler   = '/usr/bin/tsp',
   $exclude        = undef
 ) {
+
+  $ssh_key = "${key_path}/${key_name}"
 
   include zpr::resource::task_spooler
 
@@ -25,7 +28,7 @@ define zpr::rsync (
     $exclude_dir = undef
   }
 
-    $rsync_command = "${task_spooler} ${rsync} -${rsync_options} ${delete} ${exclude_dir} -e \"${ssh_options} ${key_path}\" --rsync-path=\"${rsync_path}\" ${user}@${source_url}:${files} ${dest_folder}"
+    $rsync_command = "${task_spooler} ${rsync} -${rsync_options} ${delete} ${exclude_dir} -e \"${ssh_options} ${ssh_key}\" --rsync-path=\"${rsync_path}\" ${user}@${source_url}:${files} ${dest_folder}"
 
   cron { "${title}_rsync_backup":
     command => $rsync_command,
