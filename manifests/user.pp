@@ -7,7 +7,7 @@ class zpr::user {
   $home   = hiera('zpr::home', '/var/lib/zpr')
   $uid    = '50555'
   $gid    = $uid
-  $tag    = $::hostname
+  $tag    = 'backup-proxy1-prod'
 
   # For placement of keys manually
   $key_name = undef
@@ -46,7 +46,7 @@ class zpr::user {
       key     => $::zpr_ssh_pubkey,
       type    => 'ssh-rsa',
       user    => $user,
-      tag     => $user,
+      tag     => $::hostname,
       require => User[$user]
     }
 
