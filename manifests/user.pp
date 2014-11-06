@@ -1,17 +1,20 @@
 # A class that creates and manages a proxy user for zpr
-class zpr::user {
-
+class zpr::user (
   $ensure = present
-  $user   = hiera('zpr::user', 'zpr_proxy')
-  $group  = $user
-  $home   = hiera('zpr::home', '/var/lib/zpr')
-  $uid    = '50555'
-  $gid    = $uid
-  $tag    = 'backup-proxy1-prod'
+) {
+
+  include zpr::params
+
+  $user   = $zpr::params::user
+  $group  = $zpr::params::group
+  $home   = $zpr::params::home
+  $uid    = $zpr::params::uid
+  $gid    = $zpr::params::gid
+  $tag    = $zpr::params::tag
 
   # For placement of keys manually
-  $key_name = undef
-  $pub_key  = undef
+  $key_name = $zpr::params::key_name
+  $pub_key  = $zpr::params::pub_key
 
   group { $group:
     ensure => $ensure,

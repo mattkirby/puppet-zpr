@@ -1,7 +1,9 @@
 # Provides storage for zpr
-class zpr::storage (
-  $tag = 'storage'
-) {
+class zpr::storage {
+
+  include zpr::params
+
+  $tag = $zpr::params::storage_tag
 
   Zfs <<| tag == $tag |>>
   Zfs::Share <<| tag == $tag |>>
