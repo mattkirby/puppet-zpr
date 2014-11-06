@@ -9,7 +9,7 @@ define zpr::duplicity (
   $minute        = '10',
   $monthday_inc  = [ '2', '3' ],#[ range('2', '15'), range('17', '31') ],
   $monthday_full = [ '1', '16' ],
-  $options       = $default_options
+  $options       = undef
 ) {
 
   include duplicity::install
@@ -28,15 +28,20 @@ define zpr::duplicity (
 
   # Assemble commands
 
-  $cmd_options = inline_template("<%= options.join(' ') %>")
+  if $options {
+    $cmd_options = inline_template("${duplicity} <%= options.join(' ') %>")
+  }
+  else {
+    $cmd_options = inline_template("${duplicity} <%= default_options.join(' ') %>")
+  }
   $cmd_suffix  = "${name} ${target}"
 
   $environment_command = "source ${gpg_agent_info}; export GPG_AGENT_INFO;"
 
-  $incr_cmd = "/bin/bash -c '${environment_command} ${duplicity} ${cmd_prefix} incremental ${cmd_suffix}' && echo `date` > ${lastrun}"
-  $full_cmd = "/bin/bash -c '${environment_command} ${duplicity} ${cmd_prefix} full ${cmd_suffix}' && echo `date` > ${lastrun}"
+  $incr_cmd = "/bin/bash -c '${environment_command} ${cmd_prefix} incremental ${cmd_suffix}' && echo `date` > ${lastrun}"
+  $full_cmd = "/bin/bash -c '${environment_command} ${cmd_prefix} full ${cmd_suffix}' && echo `date` > ${lastrun}"
 
-  $clean_cmd = "/bin/bash -c '${environment_command} ${duplicity} ${cmd_prefix} remove-older-than ${keep} --force ${target}'"
+  $clean_cmd = "/bin/bash -c '${environment_command} ${cmd_prefix} remove-older-than ${keep} --force ${target}'"
 
   Cron {
     ensure      => $ensure,
