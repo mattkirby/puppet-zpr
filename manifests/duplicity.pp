@@ -7,12 +7,13 @@ define zpr::duplicity (
   $keep          = '8W',
   $hour          = '1',
   $minute        = '10',
-  $monthday_inc  = [ range('2', '15'), range('17', '31') ],
+  $monthday_inc  = [ '2', '3' ],#[ range('2', '15'), range('17', '31') ],
   $monthday_full = [ '1', '16' ],
   $options       = []
 ) {
 
   include duplicity::install
+  include zpr::resource::gpg
 
   # Set variables
 

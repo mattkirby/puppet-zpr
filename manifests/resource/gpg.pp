@@ -1,6 +1,8 @@
-class zpr::resource::gpg (
+class zpr::resource::gpg {
+
+  include zpr::params
+
   $name = $zpr::params::user
-) inherits zpr::params {
 
   gpg::agent { $name:
     options => [
@@ -10,5 +12,3 @@ class zpr::resource::gpg (
     ]
   }
 }
-
-
