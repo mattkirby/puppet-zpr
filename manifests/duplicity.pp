@@ -29,10 +29,10 @@ define zpr::duplicity (
   # Assemble commands
 
   if $options {
-    $cmd_options = inline_template("${duplicity} <%= options.join(' ') %>")
+    $cmd_prefix = inline_template("${duplicity} <%= options.join(' ') %>")
   }
   else {
-    $cmd_options = inline_template("${duplicity} <%= default_options.join(' ') %>")
+    $cmd_prefix = inline_template("${duplicity} <%= default_options.join(' ') %>")
   }
   $cmd_suffix  = "${name} ${target}"
 
