@@ -2,9 +2,9 @@ class zpr::resource::gpg {
 
   include zpr::params
 
-  $name = $zpr::params::user
+  $user = $zpr::params::user
 
-  gpg::agent { $name:
+  gpg::agent { $user:
     options => [
       '--default-cache-ttl 999999999',
       '--max-cache-ttl     999999999',
