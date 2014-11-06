@@ -36,7 +36,6 @@ define zpr::duplicity (
   Cron {
     ensure      => $ensure,
     user        => $user,
-    environment => $environment_command
   }
 
   cron {
