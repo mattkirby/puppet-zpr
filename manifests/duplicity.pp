@@ -33,31 +33,28 @@ define zpr::duplicity (
 
   $clean_cmd = "/bin/bash -c '${environment_command} ${cmd_prefix} remove-older-than ${keep} --force ${target}'"
 
+  Cron {
+    ensure      => $ensure,
+    user        => $user,
+    environment => $environment_command
+  }
+
   cron {
   # Run nightly incrementals
     "Duplicity: incremental backup of ${title}":
-      ensure      => $ensure,
       command     => $incr_cmd,
-      user        => $user,
       hour        => $hour,
       minute      => $minute,
-      monthday    => $monthday_inc,
-      environment => $environment;
+      monthday    => $monthday_inc;
   # Run full backups once every two weeks or as configured
     "Duplicity: full backup of ${title}":
-      ensure      => $ensure,
       command     => $full_cmd,
-      user        => $user,
       hour        => $hour,
       minute      => $minute,
-      monthday    => $monthday_full,
-      environment => $environment;
+      monthday    => $monthday_full;
   # Remove old backups
     "Duplicity: remove old ${title} backups":
-      ensure      => $ensure,
       command     => $clean_cmd,
-      user        => $user,
-      hour        => $hour,
-      environment => $environment
+      hour        => $hour;
   }
 }
