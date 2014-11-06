@@ -9,7 +9,7 @@ define zpr::duplicity (
   $minute        = '10',
   $monthday_inc  = [ '2', '3' ],#[ range('2', '15'), range('17', '31') ],
   $monthday_full = [ '1', '16' ],
-  $options       = []
+  $options       = $default_options
 ) {
 
   include duplicity::install
@@ -17,9 +17,14 @@ define zpr::duplicity (
 
   # Set variables
 
-  $gpg_agent_info = "${home}/.gpg-agent-info"
-  $lastrun        = "${home}/.lastrun"
-  $duplicity      = '/usr/bin/duplicity'
+  $gpg_agent_info  = "${home}/.gpg-agent-info"
+  $lastrun         = "${home}/.lastrun"
+  $duplicity       = '/usr/bin/duplicity'
+  $default_options = [
+    "--encrypt-key ${key_id}",
+    "--sign-key ${key_id}",
+    '--use-agent'
+  ]
 
   # Assemble commands
 
