@@ -8,7 +8,7 @@ define zpr::duplicity (
   $keep           = '8W',
   $hour           = '1',
   $minute         = '10',
-  $monthday_inc   = range('2', '15'),
+  $monthday_inc   = range('2', '15', '17', '31'),
   $monthday_full  = [ '1', '16' ],
   $monthday_clean = '*',
   $task_spooler   = '/usr/bin/tsp',
@@ -74,6 +74,7 @@ define zpr::duplicity (
     "Duplicity: remove old ${title} backups":
       command  => $clean_cmd,
       hour     => $hour,
+      minute   => $minute,
       monthday => $monthday_clean
   }
 }
