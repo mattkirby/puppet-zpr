@@ -17,6 +17,7 @@ define zpr::duplicity (
 
   include duplicity::install
   include zpr::resource::gpg
+  include zpr::resource::aws
   include zpr::resource::task_spooler
 
   # Set variables
