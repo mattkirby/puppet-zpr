@@ -8,7 +8,7 @@ define zpr::duplicity (
   $keep           = '8W',
   $hour           = '1',
   $minute         = '10',
-  $monthday_inc   = range('2', '15', '17', '31'),
+  $monthday_inc   = concat([ range('2', '15')],[ range ('17', '31')]),
   $monthday_full  = [ '1', '16' ],
   $monthday_clean = '*',
   $task_spooler   = '/usr/bin/tsp',
