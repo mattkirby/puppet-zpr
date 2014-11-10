@@ -4,13 +4,18 @@ define zpr::job (
   $server,
   $parent,
   $ensure        = present,
+  $ship_offsite  = true,
   $files_source  = $::fqdn,
+  $s3_target     = 's3+http://ploperations-backups',
+  $gpg_key_id    = '44F93055',
   $storage_tag   = 'storage',
   $worker_tag    = 'worker',
   $readonly_tag  = 'readonly',
   $snapshot      = 'on',
   $keep          = '15', # 14 snapshots
+  $keep_s3       = '8W',
   $backup_dir    = '/srv/backup',
+  $zpr_home      = '/var/lib/zpr',
   $quota         = '100G',
   $compression   = undef,
   $share         = undef,
@@ -85,6 +90,15 @@ define zpr::job (
     exclude       => $exclude,
     rsync_options => $rsync_options,
     tag           => $worker_tag
+  }
+
+  if ( $ship_offsite == true ) {
+    zpr::duplicity { $title:
+      target => "${s3_target}/${title}",
+      home   => $zpr_home,
+      key_id => $gpg_key_id,
+      keep   => $keep_s3
+    }
   }
 
   if $share {

@@ -1,10 +1,10 @@
 define zpr::duplicity (
-  $user,
   $target,
   $home,
   $key_id,
-  $aws_key_file,
   $ensure         = present,
+  $user           = 'zpr_proxy',
+  $aws_key_file   = '.aws',
   $keep           = '8W',
   $hour           = '1',
   $minute         = '10',
@@ -41,7 +41,7 @@ define zpr::duplicity (
   }
   $cmd_suffix   = "${name} ${target}"
 
-  $environment_command = "source ${gpg_agent_info}; source ${aws_key_file}; export GPG_AGENT_INFO;"
+  $environment_command = "source ${gpg_agent_info}; source ${home}/${aws_key_file}; export GPG_AGENT_INFO;"
 
   $full        = "full ${cmd_suffix}' && echo `date` > ${lastrun}"
   $incremental = "incremental ${cmd_suffix}' && echo `date` > ${lastrun}"
