@@ -4,11 +4,11 @@ class zpr::worker {
   include zpr::params
   include zpr::resource::backup_dir
 
-  $tag = $zpr::params::worker_tag
+  $worker_tag = $zpr::params::worker_tag
 
-  File <<| tag == $tag |>>
-  Mount <<| tag == $tag |>> {
+  File <<| tag == $worker_tag |>>
+  Mount <<| tag == $worker_tag |>> {
     options => 'rw'
   }
-  Zpr::Rsync <<| tag == $tag |>>
+  Zpr::Rsync <<| tag == $worker_tag |>>
 }
