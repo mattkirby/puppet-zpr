@@ -24,4 +24,8 @@ class zpr::params {
   $aws_key_file   = hiera('zpr::aws_key_file', '.aws')
   $aws_access_key = hiera('zpr::aws_access_key', undef)
   $aws_secret_key = hiera('zpr::aws_secret_key', undef)
+
+  # GPG key data
+  $gpg_passphrase = hiera('zpr::gpg_passphrase', undef)
+  $gpg_key_grip   = hiera('zpr::gpg_key_grip', undef)
 }

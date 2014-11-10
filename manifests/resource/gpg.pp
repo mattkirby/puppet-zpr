@@ -2,10 +2,15 @@ class zpr::resource::gpg {
 
   include zpr::params
 
-  $user = $zpr::params::user
+  $user           = $zpr::params::user
+  $gpg_passphrase = $zpr::params::gpg_passphrase
+  $gpg_key_grip   = $zpr::params::gpg_key_grip
+
 
   gpg::agent { $user:
-    options => [
+    gpg_passphrase => $gpg_passphrase,
+    gpg_key_grip   => $gpg_key_grip,
+    options        => [
       '--default-cache-ttl 999999999',
       '--max-cache-ttl     999999999',
       '--use-standard-socket'
