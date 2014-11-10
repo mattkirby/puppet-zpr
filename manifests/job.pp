@@ -4,7 +4,7 @@ define zpr::job (
   $server,
   $parent,
   $ensure        = present,
-  $ship_offsite  = true,
+  $ship_offsite  = false,
   $files_source  = $::fqdn,
   $s3_target     = 's3+http://ploperations-backups',
   $gpg_key_id    = '44F93055',
