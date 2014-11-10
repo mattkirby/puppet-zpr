@@ -93,11 +93,12 @@ define zpr::job (
   }
 
   if ( $ship_offsite == true ) {
-    zpr::duplicity { $title:
+    @@zpr::duplicity { $title:
       target => "${s3_target}/${title}",
       home   => $zpr_home,
       key_id => $gpg_key_id,
-      keep   => $keep_s3
+      keep   => $keep_s3,
+      tag    => $readonly_tag
     }
   }
 
