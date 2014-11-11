@@ -50,7 +50,7 @@ class zpr::user (
       type    => 'ssh-rsa',
       user    => $user,
       tag     => $::hostname,
-      require => User[$user]
+      #require => User[$user]
     }
 
     Ssh_authorized_key <<| tag == $tag |>>
