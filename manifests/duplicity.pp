@@ -2,6 +2,7 @@ define zpr::duplicity (
   $target,
   $home,
   $key_id,
+  $files          = $name,
   $ensure         = present,
   $user           = 'zpr_proxy',
   $aws_key_file   = '.aws',
@@ -39,7 +40,7 @@ define zpr::duplicity (
   else {
     $cmd_prefix = inline_template("${duplicity} <%= default_options.join(' ') %>")
   }
-  $cmd_suffix   = "${name} ${target}"
+  $cmd_suffix   = "${files} ${target}"
 
   $environment_command = "source ${gpg_agent_info}; source ${home}/${aws_key_file}; export GPG_AGENT_INFO;"
 
