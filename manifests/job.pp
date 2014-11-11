@@ -96,7 +96,7 @@ define zpr::job (
     @@zpr::duplicity { $title:
       target => "${s3_target}/${title}",
       home   => $zpr_home,
-      files  => $files,
+      files  => "${backup_dir}/${title}",
       key_id => $gpg_key_id,
       keep   => $keep_s3,
       tag    => $readonly_tag
