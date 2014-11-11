@@ -3,11 +3,11 @@ class zpr::storage {
 
   include zpr::params
 
-  $tag = $zpr::params::storage_tag
+  $storage_tag = $zpr::params::storage_tag
 
-  Zfs <<| tag == $tag |>>
-  Zfs::Share <<| tag == $tag |>>
-  Zfs::Snapshot <<| tag == $tag |>>
-  Zfs::Rotate <<| tag == $tag |>>
-  Exec <<| tag == $tag |>>
+  Zfs <<| tag == $storage_tag |>>
+  Zfs::Share <<| tag == $storage_tag |>>
+  Zfs::Snapshot <<| tag == $storage_tag |>>
+  Zfs::Rotate <<| tag == $storage_tag |>>
+  Exec <<| tag == $storage_tag |>>
 }

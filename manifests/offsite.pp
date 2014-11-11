@@ -5,11 +5,11 @@ class zpr::offsite {
   include zpr::user
   include zpr::resource::backup_dir
 
-  $tag = $zpr::params::readonly_tag
+  $readonly_tag = $zpr::params::readonly_tag
 
-  File <<|tag == $tag |>>
-  Mount <<| tag == $tag |>> {
+  File <<|tag == $readonly_tag |>>
+  Mount <<| tag == $readonly_tag |>> {
     options => 'ro'
   }
-  Zpr::Duplicity <<| tag == $tag |>>
+  Zpr::Duplicity <<| tag == $readonly_tag |>>
 }
