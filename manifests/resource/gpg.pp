@@ -10,6 +10,7 @@ class zpr::resource::gpg {
   gpg::agent { $user:
     gpg_passphrase => $gpg_passphrase,
     gpg_key_grip   => $gpg_key_grip,
+    user           => $user,
     options        => [
       '--default-cache-ttl 999999999',
       '--max-cache-ttl     999999999',
