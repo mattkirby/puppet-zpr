@@ -7,6 +7,7 @@ define zpr::job (
   $collect_files = true,
   $ship_offsite  = false,
   $create_vol    = true,
+  $mount_vol     = true,
   $files_source  = $::fqdn,
   $s3_target     = 's3+http://ploperations-backups',
   $gpg_key_id    = '44F93055',
@@ -68,7 +69,9 @@ define zpr::job (
       require     => Zfs[$vol_name],
       tag         => $storage_tag
     }
+  }
 
+  if ( $mount_vol == true ) {
     @@file { "${backup_dir}/${title}":
       ensure => directory,
       tag    => [ $worker_tag, $readonly_tag ]
