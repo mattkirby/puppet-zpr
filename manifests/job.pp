@@ -4,7 +4,9 @@ define zpr::job (
   $server,
   $parent,
   $ensure        = present,
+  $collect_files = true,
   $ship_offsite  = false,
+  $create_vol    = true,
   $files_source  = $::fqdn,
   $s3_target     = 's3+http://ploperations-backups',
   $gpg_key_id    = '44F93055',
@@ -49,47 +51,51 @@ define zpr::job (
     }
   }
 
-  @@zfs { $vol_name:
-    ensure      => $ensure,
-    name        => $vol_name,
-    quota       => $quota,
-    compression => $compression,
-    sharenfs    => $share_nfs,
-    notify      => Exec[$chown_vol],
-    tag         => $storage_tag
+  if ( $create_vol == true ) {
+    @@zfs { $vol_name:
+      ensure      => $ensure,
+      name        => $vol_name,
+      quota       => $quota,
+      compression => $compression,
+      sharenfs    => $share_nfs,
+      notify      => Exec[$chown_vol],
+      tag         => $storage_tag
+    }
+
+    @@exec { $chown_vol:
+      path        => '/usr/bin',
+      refreshonly => true,
+      require     => Zfs[$vol_name],
+      tag         => $storage_tag
+    }
+
+    @@file { "${backup_dir}/${title}":
+      ensure => directory,
+      tag    => [ $worker_tag, $readonly_tag ]
+    }
+
+    @@mount { "${backup_dir}/${title}":
+      ensure  => mounted,
+      atboot  => true,
+      fstype  => 'nfs',
+      target  => '/etc/fstab',
+      device  => "${server}:/${vol_name}",
+      require => File["${backup_dir}/${title}"],
+      tag     => [ $worker_tag, $readonly_tag ]
+    }
   }
 
-  @@exec { $chown_vol:
-    path        => '/usr/bin',
-    refreshonly => true,
-    require     => Zfs[$vol_name],
-    tag         => $storage_tag
-  }
-
-  @@file { "${backup_dir}/${title}":
-    ensure => directory,
-    tag    => [ $worker_tag, $readonly_tag ]
-  }
-
-  @@mount { "${backup_dir}/${title}":
-    ensure  => mounted,
-    atboot  => true,
-    fstype  => 'nfs',
-    target  => '/etc/fstab',
-    device  => "${server}:/${vol_name}",
-    require => File["${backup_dir}/${title}"],
-    tag     => [ $worker_tag, $readonly_tag ]
-  }
-
-  @@zpr::rsync { $title:
-    source_url    => $files_source,
-    files         => $files,
-    dest_folder   => "${backup_dir}/${title}",
-    hour          => $rsync_hour,
-    minute        => $rsync_minute,
-    exclude       => $exclude,
-    rsync_options => $rsync_options,
-    tag           => $worker_tag
+  if ( $collect_files == true ) {
+    @@zpr::rsync { $title:
+      source_url    => $files_source,
+      files         => $files,
+      dest_folder   => "${backup_dir}/${title}",
+      hour          => $rsync_hour,
+      minute        => $rsync_minute,
+      exclude       => $exclude,
+      rsync_options => $rsync_options,
+      tag           => $worker_tag
+    }
   }
 
   if ( $ship_offsite == true ) {
