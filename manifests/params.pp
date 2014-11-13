@@ -8,7 +8,7 @@ class zpr::params {
   $gid          = hiera('zpr::gid', $uid)
 
   # Tag configurations. Useful for collecting tags on workers
-  $user_tag     = hiera('zpr::user_tag', 'backup-proxy1-prod')
+  $user_tag     = hiera('zpr::user_tag', 'zpr_user')
   $storage_tag  = hiera('zpr::storage_tag', 'storage')
   $worker_tag   = hiera('zpr::worker_tag', 'worker')
   $readonly_tag = hiera('zpr::readonly_tag', 'readonly')
