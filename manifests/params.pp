@@ -7,6 +7,11 @@ class zpr::params {
   $uid          = hiera('zpr::uid', '50555')
   $gid          = hiera('zpr::gid', $uid)
 
+  # Job parameters
+  $parent       = hiera('zpr::parent')
+  $server       = hiera('zpr::server')
+  $gpg_key_id   = hiera('zpr::gpg_key_id')
+
   # Tag configurations. Useful for collecting tags on workers
   $user_tag     = hiera('zpr::user_tag', 'zpr_user')
   $storage_tag  = hiera('zpr::storage_tag', 'storage')
