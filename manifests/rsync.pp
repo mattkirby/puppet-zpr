@@ -19,6 +19,13 @@ define zpr::rsync (
 
   $ssh_key = "${key_path}/${key_name}"
 
+  if ( is_array($files) ) {
+    $source_files = inline_template("<%= files.join(' :') %>")
+  }
+  else {
+    $source_files = $files
+  }
+
   include zpr::resource::task_spooler
 
   if ( $exclude ) {
@@ -28,7 +35,7 @@ define zpr::rsync (
     $exclude_dir = undef
   }
 
-    $rsync_command = "${task_spooler} ${rsync} -${rsync_options} ${delete} ${exclude_dir} -e \"${ssh_options} ${ssh_key}\" --rsync-path=\"${rsync_path}\" ${user}@${source_url}:${files} ${dest_folder}"
+    $rsync_command = "${task_spooler} ${rsync} -${rsync_options} ${delete} ${exclude_dir} -e \"${ssh_options} ${ssh_key}\" --rsync-path=\"${rsync_path}\" ${user}@${source_url}:${source_files} ${dest_folder}"
 
   cron { "${title}_rsync_backup":
     command => $rsync_command,
