@@ -49,7 +49,7 @@ class zpr::user (
       key    => $::zpr_ssh_pubkey,
       type   => 'ssh-rsa',
       user   => $user,
-      tag    => $::hostname,
+      tag    => $user_tag,
     }
 
     Ssh_authorized_key <<| tag == $user_tag |>> {
