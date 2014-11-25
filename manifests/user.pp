@@ -5,12 +5,13 @@ class zpr::user (
 
   include zpr::params
 
-  $user     = $zpr::params::user
-  $group    = $zpr::params::group
-  $home     = $zpr::params::home
-  $uid      = $zpr::params::uid
-  $gid      = $zpr::params::gid
-  $user_tag = $zpr::params::user_tag
+  $user        = $zpr::params::user
+  $group       = $zpr::params::group
+  $home        = $zpr::params::home
+  $uid         = $zpr::params::uid
+  $gid         = $zpr::params::gid
+  $user_tag    = $zpr::params::user_tag
+  $source_user = $zpr::params::source_user
 
   # For placement of keys manually
   $key_name = $zpr::params::key_name
@@ -43,7 +44,7 @@ class zpr::user (
     bits  => '4096'
   }
 
-  if ( $::zpr_ssh_pubkey ) {
+  if ( $::zpr_ssh_pubkey ) and ( $source_user == true ) {
     @@ssh_authorized_key { $::hostname:
       ensure => $ensure,
       key    => $::zpr_ssh_pubkey,

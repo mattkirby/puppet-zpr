@@ -17,6 +17,7 @@ class zpr::params {
   $storage_tag  = hiera('zpr::storage_tag', 'storage')
   $worker_tag   = hiera('zpr::worker_tag', 'worker')
   $readonly_tag = hiera('zpr::readonly_tag', 'readonly')
+  $source_user  = hiera('zpr::source_user', false)
 
   $backup_dir   = hiera('zpr::backup_dir', '/srv/backup')
 
