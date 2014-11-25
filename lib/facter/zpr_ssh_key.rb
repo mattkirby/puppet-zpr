@@ -1,4 +1,4 @@
-Facter.add("zpr_ssh_pubkey") do
+Facter.add(:zpr_ssh_pubkey) do
 
   setcode do
     zpr_ssh_pubkey_file = '/var/lib/zpr/.ssh/id_rsa.pub'
