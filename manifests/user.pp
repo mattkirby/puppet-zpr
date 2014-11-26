@@ -44,19 +44,21 @@ class zpr::user (
     bits  => '4096'
   }
 
-  if ( $::zpr_ssh_pubkey ) and ( $source_user == true ) {
-    @@ssh_authorized_key { $::hostname:
-      ensure => $ensure,
-      key    => $::zpr_ssh_pubkey,
-      type   => 'ssh-rsa',
-      user   => $user,
-      tag    => $user_tag,
+  if ( $::zpr_ssh_pubkey ) {
+    if ( $source_user == true ) {
+      @@ssh_authorized_key { $::hostname:
+        ensure => $ensure,
+        key    => $::zpr_ssh_pubkey,
+        type   => 'ssh-rsa',
+        user   => $user,
+        tag    => $user_tag,
+      }
     }
+  }
 
     Ssh_authorized_key <<| tag == $user_tag |>> {
       require => User[$user]
     }
-  }
 
   if ( $::is_pe == 'false' ) {
     if ( $pub_key ) {
