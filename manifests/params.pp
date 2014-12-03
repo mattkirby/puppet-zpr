@@ -11,6 +11,8 @@ class zpr::params {
   $zpool        = hiera('zpr::zpool')
   $server       = hiera('zpr::server')
   $gpg_key_id   = hiera('zpr::gpg_key_id')
+  $security     = hiera('zpr::security')
+  $permissions  = hiera('zpr::permissions')
 
   # Tag configurations. Useful for collecting tags on workers
   $user_tag     = hiera('zpr::user_tag', 'zpr_user')
