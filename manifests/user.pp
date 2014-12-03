@@ -61,7 +61,7 @@ class zpr::user (
     }
 
   if ( $::is_pe == 'false' ) {
-    if ( $pub_key ) {
+    if ( $pub_key != undef ) {
       ssh_authorized_key { $key_name:
         ensure => present,
         key    => $pub_key,
