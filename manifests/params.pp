@@ -8,7 +8,7 @@ class zpr::params {
   $gid          = hiera('zpr::gid', $uid)
 
   # Job parameters
-  $parent       = hiera('zpr::parent')
+  $zpool        = hiera('zpr::zpool')
   $server       = hiera('zpr::server')
   $gpg_key_id   = hiera('zpr::gpg_key_id')
 

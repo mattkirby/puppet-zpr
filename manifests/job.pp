@@ -2,7 +2,7 @@
 define zpr::job (
   $files,
   $server,
-  $parent,
+  $zpool,
   $ensure        = present,
   $collect_files = true,
   $ship_offsite  = false,
@@ -21,7 +21,9 @@ define zpr::job (
   $zpr_home      = '/var/lib/zpr',
   $quota         = '100G',
   $compression   = undef,
-  $share         = undef,
+  $allow_ip      = undef,
+  $permissions   = 'ro',
+  $security      = 'none',
   $share_nfs     = undef,
   $target        = undef, #to override zfs::rotate title
   $rsync_options = undef,
@@ -32,22 +34,14 @@ define zpr::job (
   $rsync_minute  = fqdn_rand(59)
 ) {
 
-  $vol_name  = "${parent}/${title}"
+  $vol_name  = "${zpool}/${title}"
   $chown_vol = "chown nobody:nobody /${vol_name} ; chmod 0777 /${vol_name}"
 
   include zpr::user
 
   if $snapshot {
     @@zfs::snapshot { $title:
-      target => $parent,
-      tag    => $storage_tag
-    }
-  }
-
-  if $share {
-    @@zfs::share { $title:
-      share  => $share,
-      parent => $parent,
+      target => $zpool,
       tag    => $storage_tag
     }
   }
@@ -112,11 +106,13 @@ define zpr::job (
     }
   }
 
-  if $share {
+  if $allow_ip {
     @@zfs::share { $title:
-      share  => $share,
-      parent => $parent,
-      tag    => $storage_tag
+      allow_ip    => $allow_ip,
+      permissions => $permissions,
+      security    => $security,
+      zpool       => $zpool,
+      tag         => $storage_tag
     }
   }
 }
