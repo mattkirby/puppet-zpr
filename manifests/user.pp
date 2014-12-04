@@ -5,13 +5,21 @@ class zpr::user (
 
   include zpr::params
 
-  $user        = $zpr::params::user
-  $group       = $zpr::params::group
-  $home        = $zpr::params::home
-  $uid         = $zpr::params::uid
-  $gid         = $zpr::params::gid
-  $user_tag    = $zpr::params::user_tag
-  $source_user = $zpr::params::source_user
+  $user          = $zpr::params::user
+  $group         = $zpr::params::group
+  $home          = $zpr::params::home
+  $uid           = $zpr::params::uid
+  $gid           = $zpr::params::gid
+  $user_tag      = $zpr::params::user_tag
+  $source_user   = $zpr::params::source_user
+  $limit_exports = $zpr::params::limit_exports
+
+  if ( $limit_exports == true ) {
+    $env = $::environment
+  }
+  else {
+    $env = undef
+  }
 
   # For placement of keys manually
   $key_name = $zpr::params::key_name
@@ -51,7 +59,7 @@ class zpr::user (
         key    => $::zpr_ssh_pubkey,
         type   => 'ssh-rsa',
         user   => $user,
-        tag    => $user_tag,
+        tag    => "${env}${user_tag},
       }
     }
   }

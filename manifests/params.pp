@@ -37,4 +37,7 @@ class zpr::params {
   # GPG key data
   $gpg_passphrase = hiera('zpr::gpg_passphrase', undef)
   $gpg_key_grip   = hiera('zpr::gpg_key_grip', undef)
+
+  # Limit exporting of resources
+  $limit_exports = hiera('zpr::limit_exports', true)
 }

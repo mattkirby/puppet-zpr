@@ -31,7 +31,8 @@ define zpr::job (
   $hour          = '0',
   $minute        = fqdn_rand(59),
   $rsync_hour    = '1',
-  $rsync_minute  = fqdn_rand(59)
+  $rsync_minute  = fqdn_rand(59),
+  $limit_exports = true,
 ) {
 
   $vol_name  = "${zpool}/${title}"
@@ -39,10 +40,17 @@ define zpr::job (
 
   include zpr::user
 
+  if ( $limit_exports == true ) {
+    $env = $::environment
+  }
+  else {
+    $env = undef
+  }
+
   if $snapshot {
     @@zfs::snapshot { $title:
       target => $zpool,
-      tag    => $storage_tag
+      tag    => "${env}${storage_tag}",
     }
   }
 
@@ -54,21 +62,21 @@ define zpr::job (
       compression => $compression,
       sharenfs    => $share_nfs,
       notify      => Exec[$chown_vol],
-      tag         => $storage_tag
+      tag         => "${env}${storage_tag}",
     }
 
     @@exec { $chown_vol:
       path        => '/usr/bin',
       refreshonly => true,
       require     => Zfs[$vol_name],
-      tag         => $storage_tag
+      tag         => "${env}${storage_tag}",
     }
   }
 
   if ( $mount_vol == true ) {
     @@file { "${backup_dir}/${title}":
       ensure => directory,
-      tag    => [ $worker_tag, $readonly_tag ]
+      tag    => [ "${env}${worker_tag}", "${env}${readonly_tag}" ],
     }
 
     @@mount { "${backup_dir}/${title}":
@@ -78,7 +86,7 @@ define zpr::job (
       target  => '/etc/fstab',
       device  => "${server}:/${vol_name}",
       require => File["${backup_dir}/${title}"],
-      tag     => [ $worker_tag, $readonly_tag ]
+      tag     => [ "${env}${worker_tag}", "${env}${readonly_tag}" ]
     }
   }
 
@@ -91,7 +99,7 @@ define zpr::job (
       minute        => $rsync_minute,
       exclude       => $exclude,
       rsync_options => $rsync_options,
-      tag           => $worker_tag
+      tag           => "${env}${worker_tag}"
     }
   }
 
@@ -102,7 +110,7 @@ define zpr::job (
       files  => "${backup_dir}/${title}",
       key_id => $gpg_key_id,
       keep   => $keep_s3,
-      tag    => $readonly_tag
+      tag    => "${env}${readonly_tag}"
     }
   }
 
@@ -112,7 +120,7 @@ define zpr::job (
       permissions => $permissions,
       security    => $security,
       zpool       => $zpool,
-      tag         => $storage_tag
+      tag         => "${env}${storage_tag}"
     }
   }
 }
