@@ -24,8 +24,8 @@ class zpr::params {
   $backup_dir   = hiera('zpr::backup_dir', '/srv/backup')
 
   # For manual public key placement
-  $key_name     = hiera('zpr::key_name', undef)
-  $pub_key      = hiera('zpr::pub_key', undef)
+  $pub_key      = hiera('zpr::pub_key', '')
+  $key_name     = hiera('zpr::key_name', "${pub_key}_default")
 
   $tsp_pkg_name = hiera('zpr::tsp_pkg_name', 'task-spooler')
 

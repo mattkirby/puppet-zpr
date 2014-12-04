@@ -69,7 +69,7 @@ class zpr::user (
     }
 
   if ( $::is_pe == 'false' ) {
-    if ( $pub_key == undef ) {
+    if ( $pub_key == '' ) {
       notify { 'No pub_key is set': }
     }
     else {
