@@ -6,9 +6,9 @@ class zpr::worker {
 
   $worker_tag = $zpr::params::worker_tag
 
-  File <<| tag == $worker_tag |>>
-  Mount <<| tag == $worker_tag |>> {
+  File <<| environment == $::environment and tag == $worker_tag |>>
+  Mount <<| environment == $::environment and tag == $worker_tag |>> {
     options => 'rw'
   }
-  Zpr::Rsync <<| tag == $worker_tag |>>
+  Zpr::Rsync <<| environment == $::environment and tag == $worker_tag |>>
 }

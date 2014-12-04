@@ -5,9 +5,9 @@ class zpr::storage {
 
   $storage_tag = $zpr::params::storage_tag
 
-  Zfs <<| tag == $storage_tag |>>
-  Zfs::Share <<| tag == $storage_tag |>>
-  Zfs::Snapshot <<| tag == $storage_tag |>>
-  Zfs::Rotate <<| tag == $storage_tag |>>
-  Exec <<| tag == $storage_tag |>>
+  Zfs <<| environment == $::environment and tag == $storage_tag |>>
+  Zfs::Share <<| environment == $::environment and tag == $storage_tag |>>
+  Zfs::Snapshot <<| environment == $::environment and tag == $storage_tag |>>
+  Zfs::Rotate <<| environment == $::environment and tag == $storage_tag |>>
+  Exec <<| environment == $::environment and tag == $storage_tag |>>
 }

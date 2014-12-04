@@ -11,5 +11,5 @@ class zpr::offsite {
   Mount <<| tag == $readonly_tag |>> {
     options => 'ro'
   }
-  Zpr::Duplicity <<| tag == $readonly_tag |>>
+  Zpr::Duplicity <<| environment == $::environment and tag == $readonly_tag |>>
 }
