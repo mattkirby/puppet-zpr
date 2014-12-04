@@ -51,7 +51,7 @@ class zpr::user (
         key    => $::zpr_ssh_pubkey,
         type   => 'ssh-rsa',
         user   => $user,
-        tag    => [ $::environment, $user_tag ],
+        tag    => [ $::current_environment, $user_tag ],
       }
     }
   }

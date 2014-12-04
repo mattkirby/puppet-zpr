@@ -42,7 +42,7 @@ define zpr::job (
   if $snapshot {
     @@zfs::snapshot { $title:
       target => $zpool,
-      tag    => [ $::environment, $storage_tag ],
+      tag    => [ $::current_environment, $storage_tag ],
     }
   }
 
@@ -54,21 +54,21 @@ define zpr::job (
       compression => $compression,
       sharenfs    => $share_nfs,
       notify      => Exec[$chown_vol],
-      tag         => [ $::environment, $storage_tag ],
+      tag         => [ $::current_environment, $storage_tag ],
     }
 
     @@exec { $chown_vol:
       path        => '/usr/bin',
       refreshonly => true,
       require     => Zfs[$vol_name],
-      tag         => [ $::environment, $storage_tag ],
+      tag         => [ $::current_environment, $storage_tag ],
     }
   }
 
   if ( $mount_vol == true ) {
     @@file { "${backup_dir}/${title}":
       ensure => directory,
-      tag    => [ $::environment, $worker_tag, $readonly_tag ],
+      tag    => [ $::current_environment, $worker_tag, $readonly_tag ],
     }
 
     @@mount { "${backup_dir}/${title}":
@@ -78,7 +78,7 @@ define zpr::job (
       target  => '/etc/fstab',
       device  => "${server}:/${vol_name}",
       require => File["${backup_dir}/${title}"],
-      tag     => [ $::environment, $worker_tag, $readonly_tag ]
+      tag     => [ $::current_environment, $worker_tag, $readonly_tag ]
     }
   }
 
@@ -91,7 +91,7 @@ define zpr::job (
       minute        => $rsync_minute,
       exclude       => $exclude,
       rsync_options => $rsync_options,
-      tag           => [ $::environment, $worker_tag ],
+      tag           => [ $::current_environment, $worker_tag ],
     }
   }
 
@@ -102,7 +102,7 @@ define zpr::job (
       files  => "${backup_dir}/${title}",
       key_id => $gpg_key_id,
       keep   => $keep_s3,
-      tag    => [ $::environment, $readonly_tag ],
+      tag    => [ $::current_environment, $readonly_tag ],
     }
   }
 
@@ -112,7 +112,7 @@ define zpr::job (
       permissions => $permissions,
       security    => $security,
       zpool       => $zpool,
-      tag         => [ $::environment, $storage_tag ],
+      tag         => [ $::current_environment, $storage_tag ],
     }
   }
 }
