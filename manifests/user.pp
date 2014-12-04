@@ -59,7 +59,7 @@ class zpr::user (
         key    => $::zpr_ssh_pubkey,
         type   => 'ssh-rsa',
         user   => $user,
-        tag    => "${env}${user_tag},
+        tag    => "${env}${user_tag}",
       }
     }
   }
@@ -69,7 +69,10 @@ class zpr::user (
     }
 
   if ( $::is_pe == 'false' ) {
-    if ( $pub_key != undef ) {
+    if ( $pub_key == undef ) {
+      notify { 'No pub_key is set': }
+    }
+    else {
       ssh_authorized_key { $key_name:
         ensure => present,
         key    => $pub_key,
