@@ -7,9 +7,9 @@ class zpr::offsite {
 
   $readonly_tag = $zpr::params::readonly_tag
 
-  File <<| current_environment == $::current_environment and tag == $readonly_tag |>>
-  Mount <<| current_environment == $::current_environment and tag == $readonly_tag |>> {
+  File           <<| tag == $::current_environment and tag == $readonly_tag |>>
+  Mount          <<| tag == $::current_environment and tag == $readonly_tag |>> {
     options => 'ro'
   }
-  Zpr::Duplicity <<| current_environment == $::current_environment and tag == $readonly_tag |>>
+  Zpr::Duplicity <<| tag == $::current_environment and tag == $readonly_tag |>>
 }

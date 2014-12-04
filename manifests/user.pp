@@ -56,7 +56,7 @@ class zpr::user (
     }
   }
 
-    Ssh_authorized_key <<| tag == $user_tag |>> {
+    Ssh_authorized_key <<| tag == $::current_environment and tag == $user_tag |>> {
       require => User[$user]
     }
 
