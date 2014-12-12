@@ -44,15 +44,13 @@ class zpr::user (
     bits  => '4096'
   }
 
-  if ( $::zpr_ssh_pubkey ) {
-    if ( $source_user == true ) {
-      @@ssh_authorized_key { $::hostname:
-        ensure => $ensure,
-        key    => $::zpr_ssh_pubkey,
-        type   => 'ssh-rsa',
-        user   => $user,
-        tag    => [ $::current_environment, $user_tag ],
-      }
+  if ( $source_user == true ) {
+    @@ssh_authorized_key { $::hostname:
+      ensure => $ensure,
+      key    => $::zpr_ssh_pubkey,
+      type   => 'ssh-rsa',
+      user   => $user,
+      tag    => [ $::current_environment, $user_tag ],
     }
   }
 

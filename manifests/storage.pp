@@ -4,10 +4,11 @@ class zpr::storage {
   include zpr::params
 
   $storage_tag = $zpr::params::storage_tag
+  $env_tag     = $zpr::params::env_tag
 
-  Zfs           <<| tag == $::current_environment and tag == $storage_tag |>>
-  Zfs::Share    <<| tag == $::current_environment and tag == $storage_tag |>>
-  Zfs::Snapshot <<| tag == $::current_environment and tag == $storage_tag |>>
-  Zfs::Rotate   <<| tag == $::current_environment and tag == $storage_tag |>>
-  Exec          <<| tag == $::current_environment and tag == $storage_tag |>>
+  Zfs           <<| tag == $env_tag and tag == $storage_tag |>>
+  Zfs::Share    <<| tag == $env_tag and tag == $storage_tag |>>
+  Zfs::Snapshot <<| tag == $env_tag and tag == $storage_tag |>>
+  Zfs::Rotate   <<| tag == $env_tag and tag == $storage_tag |>>
+  Exec          <<| tag == $env_tag and tag == $storage_tag |>>
 }

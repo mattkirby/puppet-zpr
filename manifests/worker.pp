@@ -5,10 +5,11 @@ class zpr::worker {
   include zpr::resource::backup_dir
 
   $worker_tag = $zpr::params::worker_tag
+  $env_tag    = $zpr::params::env_tag
 
-  File       <<| tag == $::current_environment and tag == $worker_tag |>>
-  Mount      <<| tag == $::current_environment and tag == $worker_tag |>> {
+  File       <<| tag == $env_tag and tag == $worker_tag |>>
+  Mount      <<| tag == $env_tag and tag == $worker_tag |>> {
     options => 'rw'
   }
-  Zpr::Rsync <<| tag == $::current_environment and tag == $worker_tag |>>
+  Zpr::Rsync <<| tag == $env_tag and tag == $worker_tag |>>
 }
