@@ -1,4 +1,4 @@
 puppet-zpr
 ==========
 
-Zpr, a backup tool managed by puppet
+Rsync backups to zfs storage using puppet to orchestrate.
