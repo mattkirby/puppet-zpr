@@ -9,8 +9,8 @@ define zpr::job (
   $create_vol    = true,
   $mount_vol     = true,
   $files_source  = $::fqdn,
-  $s3_target     = 's3+http://ploperations-backups',
-  $gpg_key_id    = '44F93055',
+  $s3_target     = undef,
+  $gpg_key_id    = undef,
   $storage_tag   = 'storage',
   $worker_tag    = 'worker',
   $readonly_tag  = 'readonly',
@@ -46,7 +46,7 @@ define zpr::job (
     }
   }
 
-  if ( $create_vol == true ) {
+  if $create_vol {
     @@zfs { $vol_name:
       ensure      => $ensure,
       name        => $vol_name,
@@ -65,7 +65,7 @@ define zpr::job (
     }
   }
 
-  if ( $mount_vol == true ) {
+  if $mount_vol {
     @@file { "${backup_dir}/${title}":
       ensure => directory,
       tag    => [ $::current_environment, $worker_tag, $readonly_tag ],
@@ -82,7 +82,7 @@ define zpr::job (
     }
   }
 
-  if ( $collect_files == true ) {
+  if $collect_files {
     @@zpr::rsync { $title:
       source_url    => $files_source,
       files         => $files,
@@ -95,14 +95,19 @@ define zpr::job (
     }
   }
 
-  if ( $ship_offsite == true ) {
-    @@zpr::duplicity { $title:
-      target => "${s3_target}/${title}",
-      home   => $zpr_home,
-      files  => "${backup_dir}/${title}",
-      key_id => $gpg_key_id,
-      keep   => $keep_s3,
-      tag    => [ $::current_environment, $readonly_tag ],
+  if $ship_offsite {
+    if ( $gpg_key_id == undef ) or ( $s3_target == undef ) {
+      fail('No key or target are set')
+    }
+    else {
+      @@zpr::duplicity { $title:
+        target => "${s3_target}/${title}",
+        home   => $zpr_home,
+        files  => "${backup_dir}/${title}",
+        key_id => $gpg_key_id,
+        keep   => $keep_s3,
+        tag    => [ $::current_environment, $readonly_tag ],
+      }
     }
   }
 
