@@ -57,11 +57,12 @@ define zpr::job (
       tag         => [ $::current_environment, $storage_tag ],
     }
 
-    @@exec { $chown_vol:
-      path        => '/usr/bin',
-      refreshonly => true,
-      require     => Zfs[$vol_name],
-      tag         => [ $::current_environment, $storage_tag ],
+    @@file { $vol_name:
+      owner   => 'nobody',
+      group   => 'nobody',
+      mode    => '0700',
+      require => Zfs[$vol_name],
+      tag     => [ $::current_environment, $storage_tag ],
     }
   }
 

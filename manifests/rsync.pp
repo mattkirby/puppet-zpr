@@ -1,4 +1,4 @@
-# rsync job define designed for use with the backup-proxy server and backup_proxy user
+# rsync job designed for use with zpr
 define zpr::rsync (
   $source_url,
   $files,
@@ -12,7 +12,7 @@ define zpr::rsync (
   $minute         = '15',
   $key_path       = '/var/lib/zpr/.ssh',
   $key_name       = 'id_rsa',
-  $ssh_options    = 'ssh -o StrictHostKeyChecking=no -i',
+  $ssh_options    = 'ssh -o \'BatchMode yes\' -i',
   $task_spooler   = '/usr/bin/tsp',
   $exclude        = undef
 ) {
@@ -35,10 +35,15 @@ define zpr::rsync (
     $exclude_dir = undef
   }
 
-    $rsync_command = "${task_spooler} ${rsync} -${rsync_options} ${delete} ${exclude_dir} -e \"${ssh_options} ${ssh_key}\" --rsync-path=\"${rsync_path}\" ${user}@${source_url}:${source_files} ${dest_folder}"
+  $base_cmd  = "${task_spooler} ${rsync} -${rsync_options} ${delete} ${exclude_dir}"
+  $ssh_cmd   = "-e \"${ssh_options} ${ssh_key}\""
+  $path_cmd  = "--rsync-path=\"${rsync_path}\""
+  $dest_cmd  = "${user}@${source_url}:${source_files} ${dest_folder}"
+
+  $rsync_cmd = "${base_cmd} ${ssh_cmd} ${path_cmd} ${dest_cmd}"
 
   cron { "${title}_rsync_backup":
-    command => $rsync_command,
+    command => $rsync_cmd,
     user    => $user,
     hour    => $hour,
     minute  => $minute

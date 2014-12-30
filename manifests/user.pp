@@ -11,7 +11,9 @@ class zpr::user (
   $uid           = $zpr::params::uid
   $gid           = $zpr::params::gid
   $user_tag      = $zpr::params::user_tag
+  $env_tag       = $zpr::params::env_tag
   $source_user   = $zpr::params::source_user
+  $wrapper       = '/usr/bin/zpr_wrapper'
 
   # For placement of keys manually
   $key_name = $zpr::params::key_name
@@ -22,14 +24,56 @@ class zpr::user (
     gid    => $gid
   }
 
+  if $source_user {
+
+    $user_shell = '/bin/bash'
+
+    zpr::resource::generate_ssh_key { $user:
+      user  => $user,
+      group => $user,
+      home  => $home,
+      bits  => '4096'
+    }
+
+    @@ssh_authorized_key { $::hostname:
+      ensure  => $ensure,
+      key     => $::zpr_ssh_pubkey,
+      type    => 'ssh-rsa',
+      user    => $user,
+      tag     => [ $env_tag, $user_tag ],
+      options => [
+        "command=\"${wrapper}\"",
+        'no-X11-forwarding',
+        'no-port-forwarding',
+        'no-agent-forwarding',
+        'no-pty',
+      ],
+    }
+
+    Sshkey <<| tag == $env_tag and tag == $user_tag |>> {
+      require => User[$user]
+    }
+  }
+  else {
+    $user_shell = '/bin/sh'
+  }
+
   user { $user:
     ensure     => $ensure,
     gid        => $gid,
     uid        => $uid,
     home       => $home,
     managehome => true,
-    shell      => '/bin/bash',
+    shell      => $user_shell,
     require    => Group[$group]
+  }
+
+  file { $wrapper:
+    ensure => present,
+    source => 'puppet:///modules/zpr/ssh_forced_commands_wrapper.sh',
+    owner  => $user,
+    group  => $group,
+    mode   => '0500',
   }
 
   ssh::allowgroup { $group: }
@@ -37,28 +81,20 @@ class zpr::user (
     entry => "${user} ALL=(ALL) NOPASSWD:/usr/bin/rsync"
   }
 
-  zpr::resource::generate_ssh_key { $user:
-    user  => $user,
-    group => $user,
-    home  => $home,
-    bits  => '4096'
+  @@sshkey { $::fqdn:
+    ensure       => $ensure,
+    host_aliases => $::primary_ip,
+    key          => $::sshecdsakey,
+    type         => 'ecdsa-sha2-nistp256',
+    target       => "${home}/.ssh/known_hosts",
+    tag          => [ $env_tag, $user_tag ],
   }
 
-  if ( $source_user == true ) {
-    @@ssh_authorized_key { $::hostname:
-      ensure => $ensure,
-      key    => $::zpr_ssh_pubkey,
-      type   => 'ssh-rsa',
-      user   => $user,
-      tag    => [ $::current_environment, $user_tag ],
-    }
+  Ssh_authorized_key <<| tag == $env_tag and tag == $user_tag |>> {
+    require => User[$user]
   }
 
-    Ssh_authorized_key <<| tag == $::current_environment and tag == $user_tag |>> {
-      require => User[$user]
-    }
-
-  if ( $::is_pe == 'false' ) {
+  if ( str2bool($::is_pe) == false ) {
     if ( $pub_key == '' ) {
       notify { 'No pub_key is set': }
     }
