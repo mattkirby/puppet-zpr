@@ -1,23 +1,20 @@
 # A class that creates and manages a proxy user for zpr
 class zpr::user (
-  $ensure = present
-) {
-
-  include zpr::params
-
-  $user          = $zpr::params::user
-  $group         = $zpr::params::group
-  $home          = $zpr::params::home
-  $uid           = $zpr::params::uid
-  $gid           = $zpr::params::gid
-  $user_tag      = $zpr::params::user_tag
-  $env_tag       = $zpr::params::env_tag
-  $source_user   = $zpr::params::source_user
-  $wrapper       = '/usr/bin/zpr_wrapper'
+  $ensure      = present,
+  $user        = $zpr::params::user,
+  $group       = $zpr::params::group,
+  $home        = $zpr::params::home,
+  $uid         = $zpr::params::uid,
+  $gid         = $zpr::params::gid,
+  $user_tag    = $zpr::params::user_tag,
+  $env_tag     = $zpr::params::env_tag,
+  $source_user = $zpr::params::source_user,
+  $key_name    = $zpr::params::key_name,
+  $pub_key     = $zpr::params::pub_key,
+  $wrapper     = '/usr/bin/zpr_wrapper',
+) inherits zpr::params {
 
   # For placement of keys manually
-  $key_name = $zpr::params::key_name
-  $pub_key  = $zpr::params::pub_key
 
   group { $group:
     ensure => $ensure,
