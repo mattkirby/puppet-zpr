@@ -1,13 +1,11 @@
-class zpr::resource::backup_dir {
-
-  include zpr::user
-  include zpr::params
-
-  $backup_dir = $zpr::params::backup_dir
+class zpr::resource::backup_dir (
+  $backup_dir = $zpr::params::backup_dir,
+  $user       = $zpr::params::user,
+) inherits zpr::params {
 
   file { $backup_dir:
     ensure => directory,
-    owner  => $zpr::params::user,
+    owner  => $user,
     mode   => '0744'
   }
 }

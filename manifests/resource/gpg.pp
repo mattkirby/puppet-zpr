@@ -1,11 +1,9 @@
-class zpr::resource::gpg {
-
-  include zpr::params
-
-  $user           = $zpr::params::user
-  $home           = $zpr::params::home
-  $gpg_passphrase = $zpr::params::gpg_passphrase
-  $gpg_key_grip   = $zpr::params::gpg_key_grip
+class zpr::resource::gpg (
+  $user           = $zpr::params::user,
+  $home           = $zpr::params::home,
+  $gpg_passphrase = $zpr::params::gpg_passphrase,
+  $gpg_key_grip   = $zpr::params::gpg_key_grip,
+) inherits zpr::params {
 
   gpg::agent { $user:
     gpg_passphrase => $gpg_passphrase,

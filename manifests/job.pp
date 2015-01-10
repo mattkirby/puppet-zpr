@@ -35,7 +35,6 @@ define zpr::job (
 ) {
 
   $vol_name  = "${zpool}/${title}"
-  $chown_vol = "chown nobody:nobody /${vol_name} ; chmod 0777 /${vol_name}"
 
   include zpr::user
 
@@ -53,7 +52,6 @@ define zpr::job (
       quota       => $quota,
       compression => $compression,
       sharenfs    => $share_nfs,
-      notify      => Exec[$chown_vol],
       tag         => [ $::current_environment, $storage_tag ],
     }
 

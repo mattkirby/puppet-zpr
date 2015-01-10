@@ -1,41 +1,34 @@
-class zpr::params {
+class zpr::params inherits zpr{
 
   # User configuration
-  $user         = hiera('zpr::user', 'zpr_proxy')
-  $group        = hiera('zpr::group', $user)
-  $home         = hiera('zpr::home', '/var/lib/zpr')
-  $uid          = hiera('zpr::uid', '50555')
-  $gid          = hiera('zpr::gid', $uid)
-
-  # Job parameters
-  $zpool        = hiera('zpr::zpool')
-  $server       = hiera('zpr::server')
-  $gpg_key_id   = hiera('zpr::gpg_key_id')
-  $security     = hiera('zpr::security')
-  $permissions  = hiera('zpr::permissions')
+  $user  = pick($globals_user, 'zpr_proxy')
+  $group = pick($globals_group, $user)
+  $home  = pick($globals_home, '/var/lib/zpr')
+  $uid   = pick($globals_uid, '50555')
+  $gid   = pick($globals_gid, $uid)
 
   # Tag configurations. Useful for collecting tags on workers
-  $user_tag     = hiera('zpr::user_tag', 'zpr_user')
-  $storage_tag  = hiera('zpr::storage_tag', 'storage')
-  $worker_tag   = hiera('zpr::worker_tag', 'worker')
-  $readonly_tag = hiera('zpr::readonly_tag', 'readonly')
-  $env_tag      = hiera('zpr::env_tag', $::current_environment)
-  $source_user  = hiera('zpr::source_user', false)
+  $user_tag     = pick($globals_user_tag, 'zpr_user')
+  $storage_tag  = pick($globals_storage_tag, 'storage')
+  $worker_tag   = pick($globals_worker_tag, 'worker')
+  $readonly_tag = pick($globals_readonly_tag, 'readonly')
+  $env_tag      = pick($globals_env_tag, $::current_environment, 'production')
+  $source_user  = $globals_source_user
 
-  $backup_dir   = hiera('zpr::backup_dir', '/srv/backup')
+  $backup_dir   = pick($globals_backup_dir, '/srv/backup')
 
   # For manual public key placement
-  $pub_key      = hiera('zpr::pub_key', '')
-  $key_name     = hiera('zpr::key_name', "${pub_key}_default")
+  $pub_key  = $globals_pub_key
+  $key_name = pick($globals_key_name, "${pub_key}_default")
 
-  $tsp_pkg_name = hiera('zpr::tsp_pkg_name', 'task-spooler')
+  $tsp_pkg_name = pick($globals_tsp_pkg_name, 'task-spooler')
 
   # AWS access keys
-  $aws_key_file   = hiera('zpr::aws_key_file', '.aws')
-  $aws_access_key = hiera('zpr::aws_access_key', undef)
-  $aws_secret_key = hiera('zpr::aws_secret_key', undef)
+  $aws_key_file   = pick($globals_aws_key_file, '.aws')
+  $aws_access_key = $globals_aws_access_key
+  $aws_secret_key = $globals_aws_secret_key
 
   # GPG key data
-  $gpg_passphrase = hiera('zpr::gpg_passphrase', undef)
-  $gpg_key_grip   = hiera('zpr::gpg_key_grip', undef)
+  $gpg_passphrase = $globals_gpg_passphrase
+  $gpg_key_grip   = $globals_gpg_key_grip
 }
