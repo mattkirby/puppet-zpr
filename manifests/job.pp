@@ -38,6 +38,14 @@ define zpr::job (
 
   include zpr::user
 
+  case $title {
+    /( *)/: {
+      fail("Backup resource titles cannot contain whitespace characters. \
+      Please remove whitespace characters from \
+      your backup resource titled ${title}")
+    }
+  }
+
   if $snapshot {
     @@zfs::snapshot { $title:
       target => $zpool,
