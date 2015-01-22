@@ -36,15 +36,16 @@ define zpr::rsync (
     $exclude_dir = undef
   }
 
-  $base_cmd  = "${task_spooler} ${rsync} -${rsync_options} ${delete} ${exclude_dir}"
+  $base_cmd  = "${rsync} -${rsync_options} ${delete} ${exclude_dir}"
   $ssh_cmd   = "-e \"${ssh_options} ${ssh_key}\""
   $path_cmd  = "--rsync-path='${rsync_path}'"
   $dest_cmd  = "${user}@${source_url}:${source_files} ${dest_folder}"
 
-  $rsync_cmd = "${base_cmd} ${ssh_cmd} ${path_cmd} ${dest_cmd}"
+  $rsync_cmd     = "${base_cmd} ${ssh_cmd} ${path_cmd} ${dest_cmd}"
+  $rsync_cmd_tsp = "${task_spooler} ${rsync_cmd}"
 
   cron { "${title}_rsync_backup":
-    command => $rsync_cmd,
+    command => $rsync_cmd_tsp,
     user    => $user,
     hour    => $hour,
     minute  => $minute
