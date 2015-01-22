@@ -7,12 +7,13 @@ import invoke
 from invoke import run
 
 def ZprRsyncForcedCommands ():
-    original_command = os.environ['SSH_ORIGINAL_COMMAND']
-    commands_dir     = os.listdir('<%= @authorized_commands_dir %>')
-    static_commands  = []
+    original_command  = os.environ['SSH_ORIGINAL_COMMAND']
+    commands_dir      = '<%= @authorized_commands_dir %>'
+    commands_list_dir = os.listdir(commands_dir)
+    static_commands   = []
 
     for command in commands_dir:
-        static_commands.append(open(command).read().rstrip('\n'))
+        static_commands.append(open('/'.join([ commands_dir, command ]).read().rstrip('\n'))
 
     if original_command in static_commands:
         for command in static_commands:
