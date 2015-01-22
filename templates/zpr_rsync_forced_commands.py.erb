@@ -12,7 +12,7 @@ def ZprRsyncForcedCommands ():
     commands_list_dir = os.listdir(commands_dir)
     static_commands   = []
 
-    for command in commands_dir:
+    for command in commands_list_dir:
         static_commands.append(open('/'.join([ commands_dir, command ])).read().rstrip('\n'))
 
     if original_command in static_commands:
