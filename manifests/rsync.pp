@@ -12,7 +12,7 @@ define zpr::rsync (
   $minute        = '15',
   $key_path      = '/var/lib/zpr/.ssh',
   $key_name      = 'id_rsa',
-  $ssh_options   = 'ssh -o \'BatchMode yes\' -i',
+  $ssh_options   = "ssh -o 'BatchMode yes' -i",
   $task_spooler  = '/usr/bin/tsp',
   $exclude       = undef
 ) {
@@ -38,7 +38,7 @@ define zpr::rsync (
 
   $base_cmd  = "${task_spooler} ${rsync} -${rsync_options} ${delete} ${exclude_dir}"
   $ssh_cmd   = "-e \"${ssh_options} ${ssh_key}\""
-  $path_cmd  = "--rsync-path=\"${rsync_path}\""
+  $path_cmd  = "--rsync-path='${rsync_path}'"
   $dest_cmd  = "${user}@${source_url}:${source_files} ${dest_folder}"
 
   $rsync_cmd = "${base_cmd} ${ssh_cmd} ${path_cmd} ${dest_cmd}"
