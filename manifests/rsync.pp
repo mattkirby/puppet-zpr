@@ -2,22 +2,23 @@
 define zpr::rsync (
   $source_url,
   $files,
-  $dest_folder    = "/srv/backup/${title}",
-  $rsync_options  = 'SahpE',
-  $delete         = '--delete-after',
-  $rsync_path     = 'sudo rsync',
-  $rsync          = '/usr/bin/rsync',
-  $user           = 'zpr_proxy',
-  $hour           = '0',
-  $minute         = '15',
-  $key_path       = '/var/lib/zpr/.ssh',
-  $key_name       = 'id_rsa',
-  $ssh_options    = 'ssh -o \'BatchMode yes\' -i',
-  $task_spooler   = '/usr/bin/tsp',
-  $exclude        = undef
+  $dest_folder   = "/srv/backup/${title}",
+  $rsync_options = 'SahpE',
+  $delete        = '--delete-after',
+  $rsync_path    = 'sudo rsync',
+  $rsync         = '/usr/bin/rsync',
+  $user          = 'zpr_proxy',
+  $hour          = '0',
+  $minute        = '15',
+  $key_path      = '/var/lib/zpr/.ssh',
+  $key_name      = 'id_rsa',
+  $ssh_options   = 'ssh -o \'BatchMode yes\' -i',
+  $task_spooler  = '/usr/bin/tsp',
+  $exclude       = undef
 ) {
 
-  $ssh_key = "${key_path}/${key_name}"
+  $authorized_commands_dir = "${key_path}/.authorized_commands"
+  $ssh_key                 = "${key_path}/${key_name}"
 
   if ( is_array($files) ) {
     $source_files = inline_template("<%= files.join(' :') %>")
@@ -47,5 +48,13 @@ define zpr::rsync (
     user    => $user,
     hour    => $hour,
     minute  => $minute
+  }
+
+  file { "${authorized_commands_dir}/${title}":
+    ensure  => present,
+    owner   => $user,
+    group   => $user,
+    content => $rsync_cmd,
+    mode    => '0400'
   }
 }

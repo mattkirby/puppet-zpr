@@ -11,10 +11,10 @@ class zpr::user (
   $source_user = $zpr::params::source_user,
   $key_name    = $zpr::params::key_name,
   $pub_key     = $zpr::params::pub_key,
-  $wrapper     = '/usr/bin/zpr_wrapper',
+  $wrapper     = '/usr/bin/zpr_wrapper.py',
 ) inherits zpr::params {
 
-  # For placement of keys manually
+  $authorized_commands_dir = "${home}/.ssh/.authorized_commands"
 
   group { $group:
     ensure => $ensure,
@@ -22,8 +22,7 @@ class zpr::user (
   }
 
   if $source_user {
-
-    $user_shell = '/bin/bash'
+$user_shell = '/bin/bash'
 
     zpr::resource::generate_ssh_key { $user:
       user  => $user,
@@ -39,7 +38,7 @@ class zpr::user (
       user    => $user,
       tag     => [ $env_tag, $user_tag ],
       options => [
-        "command=\"${wrapper}\"",
+        "command=\"python ${wrapper}\"",
         'no-X11-forwarding',
         'no-port-forwarding',
         'no-agent-forwarding',
@@ -66,11 +65,18 @@ class zpr::user (
   }
 
   file { $wrapper:
-    ensure => present,
-    source => 'puppet:///modules/zpr/ssh_forced_commands_wrapper.sh',
+    ensure  => present,
+    owner   => $user,
+    group   => $group,
+    mode    => '0500',
+    content => template('zpr/zpr_rsync_forced_commands.py.erb')
+  }
+
+  file { $authorized_commands_dir:
+    ensure => directory
     owner  => $user,
     group  => $group,
-    mode   => '0500',
+    mode   => '0400'
   }
 
   ssh::allowgroup { $group: }
