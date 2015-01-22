@@ -73,7 +73,7 @@ $user_shell = '/bin/bash'
   }
 
   file { $authorized_commands_dir:
-    ensure => directory
+    ensure => directory,
     owner  => $user,
     group  => $group,
     mode   => '0400'
