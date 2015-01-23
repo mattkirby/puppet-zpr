@@ -16,10 +16,9 @@ def ZprRsyncForcedCommands ():
         static_commands.append(open('/'.join([ commands_dir, command ])).read().rstrip('\n'))
 
     if original_command in static_commands:
-        for command in static_commands:
-            if original_command == command:
-                run('%s' % command, hide='out')
-                break
+        command_index    = static_commands.index(original_command)
+        filtered_command = static_commands[command_index]
+        run(filtered_command, hide=True, warn=True)
     else:
         print "The command requested is not permitted to run on this system"
         sys.exit(1)
