@@ -4,12 +4,22 @@ class zpr::worker (
   $env_tag    = $zpr::params::env_tag,
 ) inherits zpr::params {
 
-  include zpr::resource::backup_dir
   include zpr::user
+  include zpr::resource::backup_dir
 
-  File       <<| tag == $env_tag and tag == $worker_tag |>>
-  Mount      <<| tag == $env_tag and tag == $worker_tag |>> {
-    options => 'rw'
+  if $env_tag {
+    File       <<| tag == $env_tag and tag == $worker_tag |>>
+    Mount      <<| tag == $env_tag and tag == $worker_tag |>> {
+      options => 'rw'
+    }
+    Zpr::Rsync <<| tag == $env_tag and tag == $worker_tag |>>
   }
-  Zpr::Rsync <<| tag == $env_tag and tag == $worker_tag |>>
+  else {
+    File       <<| tag == $worker_tag |>>
+    Mount      <<| tag == $worker_tag |>> {
+      options => 'rw'
+    }
+    Zpr::Rsync <<| tag == $worker_tag |>>
+  }
+
 }
