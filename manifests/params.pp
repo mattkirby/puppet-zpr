@@ -12,7 +12,7 @@ class zpr::params inherits zpr{
   $storage_tag  = pick($globals_storage_tag, 'storage')
   $worker_tag   = pick($globals_worker_tag, 'worker')
   $readonly_tag = pick($globals_readonly_tag, 'readonly')
-  $env_tag      = pick($globals_env_tag, $::current_environment, 'production')
+  $env_tag      = $globals_env_tag
   $source_user  = $globals_source_user
 
   $backup_dir   = pick($globals_backup_dir, '/srv/backup')
