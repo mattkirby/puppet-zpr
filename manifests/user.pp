@@ -47,8 +47,15 @@ class zpr::user (
       ],
     }
 
-    Sshkey <<| tag == $env_tag and tag == $user_tag |>> {
-      require => User[$user]
+    if $env_tag {
+      Sshkey <<| tag == $env_tag and tag == $user_tag |>> {
+        require => User[$user]
+      }
+    }
+    else {
+      Sshkey <<| tag == $user_tag |>> {
+        require => User[$user]
+      }
     }
   }
   else {
@@ -87,8 +94,15 @@ class zpr::user (
     tag          => [ $env_tag, $user_tag ],
   }
 
-  Ssh_authorized_key <<| tag == $env_tag and tag == $user_tag |>> {
-    require => User[$user]
+  if $env_tag {
+    Ssh_authorized_key <<| tag == $env_tag and tag == $user_tag |>> {
+      require => User[$user]
+    }
+  }
+  else {
+    Ssh_authorized_key <<| tag == $user_tag |>> {
+      require => User[$user]
+    }
   }
 
   if ( str2bool($::is_pe) == false ) {
