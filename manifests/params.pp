@@ -8,7 +8,7 @@ class zpr::params inherits zpr{
   $gid   = pick($globals_gid, $uid)
 
   # Tag configurations. Useful for collecting tags on workers
-  $user_tag     = pick($globals_user_tag, 'zpr_user')
+  $user_tag     = pick($globals_user_tag, $user)
   $storage_tag  = pick($globals_storage_tag, 'storage')
   $worker_tag   = pick($globals_worker_tag, 'worker')
   $readonly_tag = pick($globals_readonly_tag, 'readonly')
