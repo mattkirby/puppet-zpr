@@ -13,46 +13,63 @@ define zpr::rsync (
   $hour           = '0',
   $minute         = '15',
   $key_name       = 'id_rsa',
-  $ssh_options    = 'ssh -o \'BatchMode yes\' -i',
+  $ssh_options    = "ssh -o 'BatchMode yes' -i",
   $exclude        = undef
 ) {
 
-  include zpr::resource::task_spooler
+  include zpr::task_spooler
 
   $ssh_key = "${key_path}/${key_name}"
 
-  if ( is_array($files) ) {
-    $source_files = inline_template("<%= @files.join(' :') %>")
+  if $files != '' {
+    if ( is_array($files) ) {
+      $source_files = join( $files, ' :')
+    }
+    else {
+      $source_files = $files
+    }
+
+    $command_base = [
+      $task_spooler,
+      $rsync,
+      "-${rsync_options}",
+      $delete,
+    ]
+
+    $command_args = [
+      "-e \"${ssh_options}",
+      "${ssh_key}\"",
+      "--rsync-path=\"${rsync_path}\"",
+      "${user}@${source_url}:${source_files}",
+      $dest_folder,
+    ]
+
+    if $exclude {
+      if is_array($exclude) {
+        $exclude_arr = join( $exclude, ' --exclude=')
+        $exclude_dir = [ "--exclude=${exclude_arr}" ]
+      }
+      else {
+        $exclude_dir = [ "--exclude '${exclude}'" ]
+      }
+      $rsync_1   = concat( $command_base, $exclude_dir )
+      $rsync_c   = concat( $rsync_1, $command_args )
+    }
+    else {
+      $rsync_c = concat( $command_base, $command_args )
+    }
+
+    $rsync_cmd = join( $rsync_c, ' ' )
+
+    cron { "${title}_rsync_backup":
+      command => $rsync_cmd,
+      user    => $user,
+      hour    => $hour,
+      minute  => $minute
+    }
   }
+
   else {
-    $source_files = $files
-  }
-
-  if ( $exclude ) {
-    $exclude_dir = "--exclude '${exclude}'"
-  }
-  else {
-    $exclude_dir = undef
-  }
-
-  $command_components = [
-    $task_spooler,
-    $rsync,
-    "-${rsync_options}",
-    $delete,
-    $exclude_dir,
-    "-e \"${ssh_options}\"",
-    "--rsync-path=\"${rsync_path}\"",
-    "${user}@${source_url}:${source_files}",
-    $dest_folder,
-  ]
-
-  $rsync_cmd = inline_template("<%= @command_components.join(' ') %>")
-
-  cron { "${title}_rsync_backup":
-    command => $rsync_cmd,
-    user    => $user,
-    hour    => $hour,
-    minute  => $minute
+    fail('No files have been specified')
   }
 }

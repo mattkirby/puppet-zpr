@@ -1,4 +1,4 @@
-class zpr::resource::backup_dir (
+class zpr::backup_dir (
   $backup_dir = $zpr::params::backup_dir,
   $user       = $zpr::params::user,
 ) inherits zpr::params {
