@@ -1,4 +1,4 @@
-class zpr::gpg (
+class zpr::resource::gpg (
   $user           = $zpr::params::user,
   $home           = $zpr::params::home,
   $gpg_passphrase = $zpr::params::gpg_passphrase,

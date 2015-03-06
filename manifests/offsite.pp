@@ -7,15 +7,10 @@ class zpr::offsite (
   $tags = [ $readonly_tag, $env_tag ]
 
   include zpr::user
-  include zpr::backup_dir
-  if $env_tag {
-    File           <<| tag == $readonly_tag and tag == $env_tag |>>
-    Mount          <<| tag == $readonly_tag and tag == $env_tag |>> { options => 'ro'}
-    Zpr::Duplicity <<| tag == $readonly_tag and tag == $env_tag |>>
-  }
-  else {
-    File           <<| tag == $readonly_tag |>>
-    Mount          <<| tag == $readonly_tag |>> { options => 'ro'}
-    Zpr::Duplicity <<| tag == $readonly_tag |>>
-  }
+  include zpr::resource::backup_dir
+
+  File           <<| tag == $tags |>>
+  Mount          <<| tag == $tags |>> { options => 'ro'}
+  Zpr::Duplicity <<| tag == $tags |>>
+
 }

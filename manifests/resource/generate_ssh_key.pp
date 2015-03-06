@@ -1,5 +1,5 @@
 # A class that creates ssh keys without passphrases
-define zpr::generate_ssh_key (
+define zpr::resource::generate_ssh_key (
   $user  = 'zpr',
   $group = 'zpr',
   $home = '/opt/zpr',

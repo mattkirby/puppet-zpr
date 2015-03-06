@@ -1,4 +1,4 @@
-class zpr::aws (
+class zpr::resource::aws (
   $home           = $zpr::params::home,
   $user           = $zpr::params::user,
   $aws_key_file   = $zpr::params::aws_key_file,

@@ -1,18 +1,17 @@
 # A class that creates and manages a proxy user for zpr
 class zpr::user (
-  $ensure       = present,
-  $user         = $zpr::params::user,
-  $group        = $zpr::params::group,
-  $home         = $zpr::params::home,
-  $uid          = $zpr::params::uid,
-  $gid          = $zpr::params::gid,
-  $user_tag     = $zpr::params::user_tag,
-  $env_tag      = $zpr::params::env_tag,
-  $readonly_tag = $zpr::params::readonly_tag,
-  $source_user  = $zpr::params::source_user,
-  $key_name     = $zpr::params::key_name,
-  $pub_key      = $zpr::params::pub_key,
-  $wrapper      = '/usr/bin/zpr_wrapper',
+  $ensure      = present,
+  $user        = $zpr::params::user,
+  $group       = $zpr::params::group,
+  $home        = $zpr::params::home,
+  $uid         = $zpr::params::uid,
+  $gid         = $zpr::params::gid,
+  $user_tag    = $zpr::params::user_tag,
+  $env_tag     = $zpr::params::env_tag,
+  $source_user = $zpr::params::source_user,
+  $key_name    = $zpr::params::key_name,
+  $pub_key     = $zpr::params::pub_key,
+  $wrapper     = '/usr/bin/zpr_wrapper',
 ) inherits zpr::params {
 
   # For placement of keys manually
@@ -26,7 +25,7 @@ class zpr::user (
 
     $user_shell = '/bin/bash'
 
-    zpr::generate_ssh_key { $user:
+    zpr::resource::generate_ssh_key { $user:
       user  => $user,
       group => $user,
       home  => $home,
@@ -52,9 +51,6 @@ class zpr::user (
       require => User[$user]
     }
 
-  }
-  elsif $::hostname == $readonly_tag {
-    $user_shell = '/bin/bash'
   }
   else {
     $user_shell = '/bin/sh'
@@ -96,13 +92,18 @@ class zpr::user (
     require => User[$user]
   }
 
-  if $pub_key {
-    ssh_authorized_key { $key_name:
-      ensure => present,
-      key    => $pub_key,
-      type   => 'ssh-rsa',
-      user   => $user,
-      tag    => $user
+  if ( str2bool($::is_pe) == false ) {
+    if ( $pub_key == '' ) {
+      notify { 'No pub_key is set': }
+    }
+    else {
+      ssh_authorized_key { $key_name:
+        ensure => present,
+        key    => $pub_key,
+        type   => 'ssh-rsa',
+        user   => $user,
+        tag    => $user
+      }
     }
   }
 }

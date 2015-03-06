@@ -1,5 +1,5 @@
 # A class to install task-spooler
-class zpr::task_spooler (
+class zpr::resource::task_spooler (
   $ensure   = latest,
   $pkg_name = $zpr::params::tsp_pkg_name,
 ) inherits zpr::params {
