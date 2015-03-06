@@ -9,29 +9,30 @@ define zpr::job (
   $create_vol    = true,
   $mount_vol     = true,
   $files_source  = $::fqdn,
-  $s3_target     = undef,
-  $gpg_key_id    = undef,
   $storage_tag   = 'storage',
   $worker_tag    = 'worker',
   $readonly_tag  = 'readonly',
   $snapshot      = 'on',
   $keep          = '15', # 14 snapshots
   $keep_s3       = '8W',
+  $full_every    = '30D',
   $backup_dir    = '/srv/backup',
   $zpr_home      = '/var/lib/zpr',
   $quota         = '100G',
-  $compression   = undef,
-  $allow_ip      = undef,
   $permissions   = 'ro',
   $security      = 'none',
-  $share_nfs     = undef,
-  $target        = undef, #to override zfs::rotate title
-  $rsync_options = undef,
-  $exclude       = undef,
   $hour          = '0',
   $minute        = fqdn_rand(59),
   $rsync_hour    = '1',
   $rsync_minute  = fqdn_rand(59),
+  $s3_target     = undef,
+  $gpg_key_id    = undef,
+  $compression   = undef,
+  $allow_ip      = undef,
+  $share_nfs     = undef,
+  $target        = undef, #to override zfs::rotate title
+  $rsync_options = undef,
+  $exclude       = undef,
 ) {
 
   $vol_name  = "${zpool}/${title}"
@@ -61,12 +62,11 @@ define zpr::job (
       tag         => [ $::current_environment, $storage_tag ],
     }
 
-    @@file { $vol_name:
-      owner   => 'nobody',
-      group   => 'nobody',
-      mode    => '0700',
-      require => Zfs[$vol_name],
-      tag     => [ $::current_environment, $storage_tag ],
+    @@file { "/${vol_name}":
+      owner => 'nobody',
+      group => 'nobody',
+      mode  => '0777',
+      tag   => [ $::current_environment, $storage_tag ],
     }
   }
 
@@ -106,12 +106,13 @@ define zpr::job (
     }
     else {
       @@zpr::duplicity { $title:
-        target => "${s3_target}/${title}",
-        home   => $zpr_home,
-        files  => "${backup_dir}/${title}",
-        key_id => $gpg_key_id,
-        keep   => $keep_s3,
-        tag    => [ $::current_environment, $readonly_tag ],
+        target     => "${s3_target}/${title}",
+        home       => $zpr_home,
+        files      => "${backup_dir}/${title}",
+        key_id     => $gpg_key_id,
+        keep       => $keep_s3,
+        full_every => $full_every,
+        tag        => [ $::current_environment, $readonly_tag ],
       }
     }
   }
