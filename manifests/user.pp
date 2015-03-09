@@ -38,7 +38,7 @@ class zpr::user (
       key     => $::zpr_ssh_pubkey,
       type    => 'ssh-rsa',
       user    => $user,
-      tag     => [ $env_tag, $user_tag ],
+      tag     => [ $env_tag, $user_tag , $::hostname ],
       options => [
         "command=\"${wrapper}\"",
         'no-X11-forwarding',
