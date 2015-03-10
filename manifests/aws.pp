@@ -10,6 +10,6 @@ class zpr::aws (
     ensure  => file,
     owner   => $user,
     mode    => '0400',
-    content => template('zpr/resource/aws.erb')
+    content => template('zpr/aws.erb')
   }
 }

@@ -12,10 +12,28 @@ class zpr::user (
   $source_user  = $zpr::params::source_user,
   $key_name     = $zpr::params::key_name,
   $pub_key      = $zpr::params::pub_key,
-  $wrapper      = '/usr/bin/zpr_wrapper',
+  $sanity_check = $zpr::params::sanity_check,
+  $wrapper      = '/usr/bin/zpr_wrapper.py',
 ) inherits zpr::params {
 
   # For placement of keys manually
+
+  $check_for_elements = [
+    ';',
+    '&',
+    '\|',
+    'authorized_keys',
+    'sudoers',
+    '/bin/.*',
+    '/usr/bin/.*',
+  ]
+
+  if $sanity_check {
+    $check_for = $sanity_check
+  }
+  else {
+    $check_for = join($check_for_elements, '|')
+  }
 
   group { $group:
     ensure => $ensure,
@@ -71,11 +89,11 @@ class zpr::user (
   }
 
   file { $wrapper:
-    ensure => present,
-    source => 'puppet:///modules/zpr/ssh_forced_commands_wrapper.sh',
-    owner  => $user,
-    group  => $group,
-    mode   => '0500',
+    ensure  => present,
+    owner   => $user,
+    group   => $group,
+    mode    => '0500',
+    content => template('zpr/ssh_forced_commands_wrapper.py.erb')
   }
 
   ssh::allowgroup { $group: }
