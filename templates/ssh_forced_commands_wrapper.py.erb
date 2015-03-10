@@ -1,0 +1,34 @@
+#!/usr/bin/env python2
+
+import re
+import os
+import sys
+from subprocess import call
+
+
+def check_command():
+    original_command = os.environ['SSH_ORIGINAL_COMMAND']
+    allowed = [
+        'sudo rsync --server --sender',
+        '.',
+        '^/.*/?',
+        r'(<%= @check_for %>)',
+    ]
+    c_split = str(original_command).split()
+
+    if not allowed[0] == ' '.join(c_split[:4]):
+        sys.exit(1)
+
+    if not allowed[1] == c_split[5]:
+        sys.exit(1)
+
+    for i in c_split[6:]:
+        if not re.compile(allowed[2]).findall(i):
+            sys.exit(1)
+        if re.compile(allowed[3]).findall(i):
+            sys.exit(1)
+
+    call(original_command, shell=True)
+
+if __name__ == '__main__':
+    check_command()

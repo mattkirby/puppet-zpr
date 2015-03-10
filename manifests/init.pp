@@ -13,6 +13,7 @@ class zpr (
   $source_user    = undef,
   $backup_dir     = undef,
   $pub_key        = undef,
+  $sanity_check   = undef,
   $key_name       = undef,
   $tsp_pkg_name   = undef,
   $aws_key_file   = undef,
@@ -34,6 +35,7 @@ class zpr (
   $globals_source_user    = $source_user
   $globals_backup_dir     = $backup_dir
   $globals_pub_key        = $pub_key
+  $globals_sanity_check   = $sanity_check
   $globals_key_name       = $key_name
   $globals_tsp_pkg_name   = $tsp_pkg_name
   $globals_aws_key_file   = $aws_key_file

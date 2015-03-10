@@ -14,6 +14,7 @@ class zpr::params inherits zpr{
   $readonly_tag = pick($globals_readonly_tag, 'readonly')
   $env_tag      = $globals_env_tag
   $source_user  = $globals_source_user
+  $sanity_check = $globals_sanity_check
 
   $backup_dir   = pick($globals_backup_dir, '/srv/backup')
 
