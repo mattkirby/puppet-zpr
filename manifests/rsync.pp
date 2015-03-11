@@ -13,15 +13,18 @@ define zpr::rsync (
   $hour           = '0',
   $minute         = '15',
   $key_name       = 'id_rsa',
-  $ssh_options    = "ssh -o 'BatchMode yes' -i",
+  $ssh_options    = "ssh -o 'SendEnv zpr_rsync_cmd' -o 'BatchMode yes' -i",
+  $worker_tag     = undef,
+  $env_tag        = $::current_environment,
   $exclude        = undef
 ) {
 
-  include zpr::task_spooler
+  include zpr::rsync_cmd
 
-  $ssh_key = "${key_path}/${key_name}"
+  $permitted_commands = "${key_path}/permitted_commands"
+  $ssh_key            = "${key_path}/${key_name}"
 
-  if $files != '' {
+  if $files != '' or $files {
     if ( is_array($files) ) {
       $source_files = join( $files, ' :')
     }
@@ -30,16 +33,15 @@ define zpr::rsync (
     }
 
     $command_base = [
-      $task_spooler,
       $rsync,
       "-${rsync_options}",
       $delete,
     ]
 
     $command_args = [
-      "-e \"${ssh_options}",
-      "${ssh_key}\"",
-      "--rsync-path=\"${rsync_path}\"",
+      "-e \\\"${ssh_options}",
+      "${ssh_key}\\\"",
+      "--rsync-path='${rsync_path}'",
       "${user}@${source_url}:${source_files}",
       $dest_folder,
     ]
@@ -60,16 +62,34 @@ define zpr::rsync (
     }
 
     $rsync_cmd = join( $rsync_c, ' ' )
+    $cat_cmd   = "cat ${permitted_commands}/${title}"
 
-    cron { "${title}_rsync_backup":
-      command => $rsync_cmd,
+    $full_cmd = [
+      $task_spooler,
+      '/bin/bash -c',
+      '"export',
+      "zpr_rsync_cmd=\\\"$(${cat_cmd})\\\"",
+      ';',
+      "$(${cat_cmd} | tr -d '\\\\')\"",
+    ]
+
+    @@cron { "${title}_rsync_backup":
+      command => join( $full_cmd, ' ' ),
       user    => $user,
       hour    => $hour,
-      minute  => $minute
+      minute  => $minute,
+      tag     => [ $worker_tag, $env_tag, 'zpr_rsync'],
+    }
+
+    @@file { "${permitted_commands}/${title}":
+      owner   => $user,
+      group   => $user,
+      mode    => '0400',
+      content => $rsync_cmd,
+      tag     => [ $worker_tag, $env_tag, $source_url, 'zpr_rsync' ]
     }
   }
-
   else {
-    fail('No files have been specified')
+    warning( 'No files have been specified so no backups will be configured' )
   }
 }
