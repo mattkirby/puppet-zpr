@@ -101,13 +101,18 @@ class zpr::user (
     entry => "${user} ALL=(ALL) NOPASSWD:/usr/bin/rsync"
   }
 
-  @@sshkey { $::fqdn:
-    ensure       => $ensure,
-    host_aliases => $::primary_ip,
-    key          => $::sshecdsakey,
-    type         => 'ecdsa-sha2-nistp256',
-    target       => "${home}/.ssh/known_hosts",
-    tag          => [ $env_tag, $user_tag ],
+  if $::sshecdsakey {
+    @@sshkey { $::fqdn:
+      ensure       => $ensure,
+      host_aliases => $::primary_ip,
+      key          => $::sshecdsakey,
+      type         => 'ecdsa-sha2-nistp256',
+      target       => "${home}/.ssh/known_hosts",
+      tag          => [ $env_tag, $user_tag ],
+    }
+  }
+  else {
+    notify { "Cannot locate ecdsa key for ${::hostname}. Rsync jobs will not function": }
   }
 
   Ssh_authorized_key <<| tag == $user_tag |>> {
