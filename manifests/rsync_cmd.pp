@@ -3,7 +3,7 @@ class zpr::rsync_cmd (
   $permitted_commands = "${zpr::params::home}/.ssh/permitted_commands",
   $owner              = $zpr::params::user,
   $group              = $zpr::params::group,
-) inherits zpr {
+) inherits zpr::params {
 
   file { $permitted_commands:
     ensure => directory,
