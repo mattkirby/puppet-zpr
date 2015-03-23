@@ -1,22 +1,22 @@
 # A class that creates and manages a proxy user for zpr
 class zpr::user (
-  $ensure       = present,
-  $user         = $zpr::params::user,
-  $group        = $zpr::params::group,
-  $home         = $zpr::params::home,
-  $uid          = $zpr::params::uid,
-  $gid          = $zpr::params::gid,
-  $user_tag     = $zpr::params::user_tag,
-  $env_tag      = $zpr::params::env_tag,
-  $readonly_tag = $zpr::params::readonly_tag,
-  $source_user  = $zpr::params::source_user,
-  $key_name     = $zpr::params::key_name,
-  $pub_key      = $zpr::params::pub_key,
-  $sanity_check = $zpr::params::sanity_check,
-  $wrapper      = '/usr/bin/zpr_wrapper.py',
+  $ensure             = present,
+  $user               = $zpr::params::user,
+  $group              = $zpr::params::group,
+  $home               = $zpr::params::home,
+  $uid                = $zpr::params::uid,
+  $gid                = $zpr::params::gid,
+  $user_tag           = $zpr::params::user_tag,
+  $worker_tag         = $zpr::params::worker_tag,
+  $env_tag            = $zpr::params::env_tag,
+  $readonly_tag       = $zpr::params::readonly_tag,
+  $source_user        = $zpr::params::source_user,
+  $key_name           = $zpr::params::key_name,
+  $pub_key            = $zpr::params::pub_key,
+  $sanity_check       = $zpr::params::sanity_check,
+  $permitted_commands = $zpr::params::permitted_commands,
+  $wrapper            = '/usr/bin/zpr_wrapper.py',
 ) inherits zpr::params {
-
-  # For placement of keys manually
 
   $check_for_elements = [
     ';',
@@ -45,10 +45,7 @@ class zpr::user (
     $user_shell = '/bin/bash'
 
     zpr::generate_ssh_key { $user:
-      user  => $user,
-      group => $user,
-      home  => $home,
-      bits  => '4096'
+      home => $home
     }
 
     @@ssh_authorized_key { $::hostname:
@@ -56,7 +53,7 @@ class zpr::user (
       key     => $::zpr_ssh_pubkey,
       type    => 'ssh-rsa',
       user    => $user,
-      tag     => [ $env_tag, $user_tag , $::hostname ],
+      tag     => [ $env_tag, $worker_tag, 'zpr_ssh_authorized_key' ],
       options => [
         "command=\"${wrapper}\"",
         'no-X11-forwarding',
@@ -65,35 +62,40 @@ class zpr::user (
         'no-pty',
       ],
     }
-
-    Sshkey <<| tag == $user_tag |>> {
-      require => User[$user]
-    }
-
   }
   elsif $::hostname == $readonly_tag {
     $user_shell = '/bin/bash'
   }
   else {
     $user_shell = '/bin/sh'
+
+    zpr::generate_ssh_key { $user:
+      home => $home,
+      gen  => false
+    }
   }
 
   user { $user:
-    ensure     => $ensure,
-    gid        => $gid,
-    uid        => $uid,
-    home       => $home,
-    managehome => true,
-    shell      => $user_shell,
-    require    => Group[$group]
+    ensure  => $ensure,
+    gid     => $gid,
+    uid     => $uid,
+    home    => $home,
+    shell   => $user_shell,
+    require => Group[$group]
   }
 
-  file { $wrapper:
-    ensure  => present,
-    owner   => $user,
-    group   => $group,
-    mode    => '0500',
-    content => template('zpr/ssh_forced_commands_wrapper.py.erb')
+  file {
+    $home:
+      ensure => directory,
+      owner  => $user,
+      group  => $user,
+      mode   => '0755';
+    $wrapper:
+      ensure  => present,
+      owner   => $user,
+      group   => $user,
+      mode    => '0500',
+      content => template('zpr/ssh_forced_commands_wrapper.py.erb')
   }
 
   ssh::allowgroup { $group: }
@@ -107,10 +109,10 @@ class zpr::user (
     key          => $::sshecdsakey,
     type         => 'ecdsa-sha2-nistp256',
     target       => "${home}/.ssh/known_hosts",
-    tag          => [ $env_tag, $user_tag ],
+    tag          => [ $env_tag, $worker_tag, 'zpr_sshkey' ],
   }
 
-  Ssh_authorized_key <<| tag == $user_tag |>> {
+  Ssh_authorized_key <<| tag == $worker_tag and tag == 'zpr_ssh_authorized_key' |>> {
     require => User[$user]
   }
 
@@ -123,4 +125,6 @@ class zpr::user (
       tag    => $user
     }
   }
+
+  include zpr::rsync_cmd
 }

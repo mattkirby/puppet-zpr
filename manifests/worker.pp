@@ -6,15 +6,18 @@ class zpr::worker (
 
   include zpr::user
   include zpr::backup_dir
+  include zpr::task_spooler
 
   if $env_tag {
-    File       <<| tag == $worker_tag and tag == $env_tag |>>
-    Mount      <<| tag == $worker_tag and tag == $env_tag |>> { options => 'rw' }
-    Zpr::Rsync <<| tag == $worker_tag and tag == $env_tag |>>
+    File   <<| ( tag == 'zpr_rsync' or tag == 'zpr_vol' ) and tag == $worker_tag and tag == $env_tag |>>
+    Mount  <<| tag == 'zpr_vol' and tag == $worker_tag and tag == $env_tag |>> { options => 'rw' }
+    Cron   <<| tag == 'zpr_rsync' and tag == $worker_tag and tag == $env_tag |>>
+    Sshkey <<| tag == 'zpr_sshkey' and tag == $worker_tag and tag == $env_tag |>>
   }
   else {
-    File       <<| tag == $worker_tag |>>
-    Mount      <<| tag == $worker_tag |>> { options => 'rw' }
-    Zpr::Rsync <<| tag == $worker_tag |>>
+    File   <<| ( tag == 'zpr_rsync' or tag == 'zpr_vol' ) and tag == $worker_tag |>>
+    Mount  <<| tag == 'zpr_vol' and tag == $worker_tag |>> { options => 'rw' }
+    Cron   <<| tag == 'zpr_rsync' and tag == $worker_tag |>>
+    Sshkey <<| tag == 'zpr_sshkey' and tag == $worker_tag |>>
   }
 }

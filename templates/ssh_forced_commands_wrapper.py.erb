@@ -7,14 +7,27 @@ from subprocess import call
 
 
 def check_command():
-    original_command = os.environ['SSH_ORIGINAL_COMMAND']
+    source_command = os.environ.get('zpr_rsync_cmd')
+    if not source_command:
+        sys.exit(1)
+    ssh_command = os.environ['SSH_ORIGINAL_COMMAND']
+    commands_dir = '<%= @permitted_commands %>'
+    commands_list = os.listdir(commands_dir)
+    static_commands = []
+
+    for command in commands_list:
+        static_commands.append(open('/'.join([ commands_dir, command])).read().replace("\\", ""))
+
+    if not source_command in static_commands:
+        sys.exit(1)
+
     allowed = [
         'sudo rsync --server --sender',
         '.',
         '^/.*/?',
         r'(<%= @check_for %>)',
     ]
-    c_split = str(original_command).split()
+    c_split = str(ssh_command).split()
 
     if not allowed[0] == ' '.join(c_split[:4]):
         sys.exit(1)
@@ -28,7 +41,7 @@ def check_command():
         if re.compile(allowed[3]).findall(i):
             sys.exit(1)
 
-    call(original_command, shell=True)
+    call(ssh_command, shell=True)
 
 if __name__ == '__main__':
     check_command()

@@ -14,7 +14,7 @@ define zpr::duplicity (
   $options        = undef
 ) {
 
-  include duplicity::install
+  include zpr::duplicity_pkg
   include zpr::gpg
   include zpr::aws
   include zpr::task_spooler
@@ -70,19 +70,18 @@ define zpr::duplicity (
   $full_cmd    = join( [ $base, $full, "'" ], ' ')
   $clean_cmd   = join( [ $base, $clean, "'"], ' ')
 
-  Cron {
-    ensure => $ensure,
-    user   => $user
-  }
-
   cron {
   # Run full backups as configured witht incremental in beetween
     "Duplicity: full backup of ${title}":
+      ensure  => $ensure,
+      user    => $user,
       command => $full_cmd,
       hour    => $hour,
       minute  => $minute;
   # Remove old backups
     "Duplicity: remove old ${title} backups":
+      ensure  => $ensure,
+      user    => $user,
       command => $clean_cmd,
       hour    => $hour,
       minute  => $minute,

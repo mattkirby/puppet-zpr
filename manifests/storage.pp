@@ -5,17 +5,15 @@ class zpr::storage (
 ) inherits zpr::params {
 
   if $env_tag {
-    Zfs           <<| tag == $storage_tag and tag == $env_tag |>>
-    Zfs::Share    <<| tag == $storage_tag and tag == $env_tag |>>
-    Zfs::Snapshot <<| tag == $storage_tag and tag == $env_tag |>>
-    Zfs::Rotate   <<| tag == $storage_tag and tag == $env_tag |>>
-    File          <<| tag == $storage_tag and tag == $env_tag |>>
+    Zfs           <<| tag == $storage_tag and tag == 'zpr_vol' and tag == $env_tag |>>
+    Zfs::Share    <<| tag == $storage_tag and tag == 'zpr_share' and tag == $env_tag |>>
+    Zfs::Snapshot <<| tag == $storage_tag and tag == 'zpr_snapshot' and tag == $env_tag |>>
+    File          <<| tag == $storage_tag and tag == 'zpr_vol' and tag == $env_tag |>>
   }
   else {
-    Zfs           <<| tag == $storage_tag |>>
-    Zfs::Share    <<| tag == $storage_tag |>>
-    Zfs::Snapshot <<| tag == $storage_tag |>>
-    Zfs::Rotate   <<| tag == $storage_tag |>>
-    File          <<| tag == $storage_tag |>>
+    Zfs           <<| tag == $storage_tag and tag == 'zpr_vol' |>>
+    Zfs::Share    <<| tag == $storage_tag and tag == 'zpr_share' |>>
+    Zfs::Snapshot <<| tag == $storage_tag and tag == 'zpr_snapshot' |>>
+    File          <<| tag == $storage_tag and tag == 'zpr_vol' |>>
   }
 }

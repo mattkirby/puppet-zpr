@@ -33,6 +33,7 @@ define zpr::job (
   $target        = undef, #to override zfs::rotate title
   $rsync_options = undef,
   $exclude       = undef,
+  $env_tag       = $::current_environment,
 ) {
 
   $vol_name  = "${zpool}/${title}"
@@ -48,7 +49,7 @@ define zpr::job (
   if $snapshot {
     @@zfs::snapshot { $title:
       target => $zpool,
-      tag    => [ $::current_environment, $storage_tag ],
+      tag    => [ $::current_environment, $storage_tag, 'zpr_snapshot' ],
     }
   }
 
@@ -59,21 +60,21 @@ define zpr::job (
       quota       => $quota,
       compression => $compression,
       sharenfs    => $share_nfs,
-      tag         => [ $::current_environment, $storage_tag ],
+      tag         => [ $::current_environment, $storage_tag, 'zpr_vol' ],
     }
 
     @@file { "/${vol_name}":
       owner => 'nobody',
       group => 'nobody',
       mode  => '0777',
-      tag   => [ $::current_environment, $storage_tag ],
+      tag   => [ $::current_environment, $storage_tag, 'zpr_vol' ],
     }
   }
 
   if $mount_vol {
     @@file { "${backup_dir}/${title}":
       ensure => directory,
-      tag    => [ $::current_environment, $worker_tag, $readonly_tag ],
+      tag    => [ $::current_environment, $worker_tag, $readonly_tag , 'zpr_vol' ],
     }
 
     @@mount { "${backup_dir}/${title}":
@@ -83,12 +84,12 @@ define zpr::job (
       target  => '/etc/fstab',
       device  => "${server}:/${vol_name}",
       require => File["${backup_dir}/${title}"],
-      tag     => [ $::current_environment, $worker_tag, $readonly_tag ]
+      tag     => [ $::current_environment, $worker_tag, $readonly_tag, 'zpr_vol' ]
     }
   }
 
   if $collect_files {
-    @@zpr::rsync { $title:
+    zpr::rsync { $title:
       source_url    => $files_source,
       files         => $files,
       dest_folder   => "${backup_dir}/${title}",
@@ -96,7 +97,7 @@ define zpr::job (
       minute        => $rsync_minute,
       exclude       => $exclude,
       rsync_options => $rsync_options,
-      tag           => [ $::current_environment, $worker_tag ],
+      worker_tag    => $worker_tag,
     }
   }
 
@@ -112,7 +113,7 @@ define zpr::job (
         key_id     => $gpg_key_id,
         keep       => $keep_s3,
         full_every => $full_every,
-        tag        => [ $::current_environment, $readonly_tag ],
+        tag        => [ $::current_environment, $readonly_tag, 'zpr_duplicity' ],
       }
     }
   }
@@ -123,7 +124,7 @@ define zpr::job (
       permissions => $permissions,
       security    => $security,
       zpool       => $zpool,
-      tag         => [ $::current_environment, $storage_tag ],
+      tag         => [ $::current_environment, $storage_tag, 'zpr_share' ],
     }
   }
 }
