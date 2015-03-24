@@ -1,17 +1,12 @@
 # provide the permitted_commands directory
 class zpr::rsync_cmd (
-  $permitted_commands = "${zpr::params::home}/.ssh/permitted_commands",
-  $owner              = $zpr::params::user,
-  $group              = $zpr::params::group,
+  $env_tag = $zpr::params::env_tag
 ) inherits zpr::params {
 
-  file { $permitted_commands:
-    ensure => directory,
-    owner  => $owner,
-    group  => $group,
-    mode   => '0400',
+  if $env_tag {
+    File <<| tag == $::fqdn and tag == 'zpr_rsync' and tag == $env_tag |>>
   }
-
-  File <<| tag == $::fqdn and tag == 'zpr_rsync' |>>
-
+  else {
+    File <<| tag == $::fqdn and tag == 'zpr_rsync' |>>
+  }
 }

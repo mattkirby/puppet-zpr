@@ -10,7 +10,6 @@ class zpr (
   $worker_tag         = undef,
   $readonly_tag       = undef,
   $env_tag            = undef,
-  $source_user        = undef,
   $backup_dir         = undef,
   $pub_key            = undef,
   $sanity_check       = undef,
@@ -30,11 +29,10 @@ class zpr (
   $globals_uid                = $uid
   $globals_gid                = $gid
   $globals_user_tag           = $user_tag
-  $globals_storage_tag        = $storage_tag
+  $globals_storage            = $storage
   $globals_worker_tag         = $worker_tag
   $globals_readonly_tag       = $readonly_tag
   $globals_env_tag            = $env_tag
-  $globals_source_user        = $source_user
   $globals_backup_dir         = $backup_dir
   $globals_pub_key            = $pub_key
   $globals_sanity_check       = $sanity_check
