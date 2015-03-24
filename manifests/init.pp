@@ -6,7 +6,7 @@ class zpr (
   $uid                = undef,
   $gid                = undef,
   $user_tag           = undef,
-  $storage_tag        = undef,
+  $storage            = undef,
   $worker_tag         = undef,
   $readonly_tag       = undef,
   $env_tag            = undef,
