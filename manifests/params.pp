@@ -13,7 +13,6 @@ class zpr::params inherits zpr{
   $readonly_tag       = pick($globals_readonly_tag, 'readonly')
   $storage            = $globals_storage
   $env_tag            = $globals_env_tag
-  $source_user        = $globals_source_user
   $sanity_check       = $globals_sanity_check
   $permitted_commands = pick($globals_permitted_commands, "${home}/.ssh/permitted_commands")
 

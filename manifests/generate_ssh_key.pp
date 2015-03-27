@@ -10,17 +10,10 @@ define zpr::generate_ssh_key (
 
   $generate_key = "sudo -u ${user} ssh-keygen -t rsa -b ${bits} -N \"\" -f ${home}/.ssh/id_rsa"
 
-  File {
-    owner => $user,
-    group => $group
-  }
-
-  file {
-    "${home}/.ssh":
-      ensure => directory;
-    "${home}/.ssh/known_hosts":
-      ensure  => file,
-      require => File["${home}/.ssh"];
+  file { "${home}/.ssh":
+    ensure => directory,
+    owner  => $user,
+    group  => $group
   }
 
   if $gen {

@@ -232,7 +232,7 @@ define zpr::job (
       atboot  => true,
       fstype  => 'nfs',
       target  => '/etc/fstab',
-      device  => "${server}:/${vol_name}",
+      device  => "${storage}:/${vol_name}",
       require => File["${backup_dir}/${title}"],
       tag     => [ $::current_environment, $worker_tag, $readonly_tag, 'zpr_vol' ]
     }

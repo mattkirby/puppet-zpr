@@ -18,6 +18,8 @@ class zpr::user (
   $wrapper            = '/usr/bin/zpr_wrapper.py',
 ) inherits zpr::params {
 
+  $known_hosts = "${home}/.ssh/known_hosts"
+
   $check_for_elements = [
     ';',
     '&',
@@ -28,16 +30,17 @@ class zpr::user (
     '/usr/bin/.*',
   ]
 
+  $ssh_key_concat = [
+    "${::fqdn},${::primary_ip}",
+    'ecdsa-sha2-nistp256',
+    "${::sshecdsakey}\n"
+  ]
+
   if $sanity_check {
     $check_for = $sanity_check
   }
   else {
     $check_for = join($check_for_elements, '|')
-  }
-
-  group { $group:
-    ensure => $ensure,
-    gid    => $gid
   }
 
   if $source_user {
@@ -62,6 +65,23 @@ class zpr::user (
         'no-pty',
       ],
     }
+
+    concat { $known_hosts:
+      owner => $user,
+      group => $group,
+      mode  => '0600',
+    }
+
+    $known_hosts_header = [
+      '# HEADER: This file is managed by puppet.',
+      "# HEADER: Manual changes will be stomped.\n",
+    ]
+
+    concat::fragment { 'known_hosts_header':
+      target  => $known_hosts,
+      content => join( $known_hosts_header, "\n" ),
+      order   => 0
+    }
   }
   elsif $::hostname == $readonly_tag {
     $user_shell = '/bin/bash'
@@ -73,6 +93,11 @@ class zpr::user (
       home => $home,
       gen  => false
     }
+  }
+
+  group { $group:
+    ensure => $ensure,
+    gid    => $gid
   }
 
   user { $user:
@@ -90,6 +115,11 @@ class zpr::user (
       owner  => $user,
       group  => $user,
       mode   => '0755';
+    $permitted_commands:
+      ensure => directory,
+      owner  => $user,
+      group  => $user,
+      mode   => '0400';
     $wrapper:
       ensure  => present,
       owner   => $user,
@@ -103,13 +133,10 @@ class zpr::user (
     entry => "${user} ALL=(ALL) NOPASSWD:/usr/bin/rsync"
   }
 
-  @@sshkey { $::fqdn:
-    ensure       => $ensure,
-    host_aliases => $::primary_ip,
-    key          => $::sshecdsakey,
-    type         => 'ecdsa-sha2-nistp256',
-    target       => "${home}/.ssh/known_hosts",
-    tag          => [ $env_tag, $worker_tag, 'zpr_sshkey' ],
+  @@concat::fragment { "${::fqdn}_ecdsakey":
+    target  => $known_hosts,
+    content => join( $ssh_key_concat, ' ' ),
+    tag     => [ $env_tag, $worker_tag, 'zpr_sshkey' ],
   }
 
   Ssh_authorized_key <<| tag == $worker_tag and tag == 'zpr_ssh_authorized_key' |>> {
