@@ -48,8 +48,8 @@ define zpr::rsync (
 
     if $exclude {
       if is_array($exclude) {
-        $exclude_arr = join( $exclude, ' --exclude=')
-        $exclude_dir = [ "--exclude=${exclude_arr}" ]
+        $exclude_arr = join( $exclude, "' --exclude='")
+        $exclude_dir = [ "--exclude='${exclude_arr}'" ]
       }
       else {
         $exclude_dir = [ "--exclude '${exclude}'" ]
