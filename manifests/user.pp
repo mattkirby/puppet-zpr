@@ -30,11 +30,23 @@ class zpr::user (
     '/usr/bin/.*',
   ]
 
-  $ssh_key_concat = [
-    "${::fqdn},${::primary_ip}",
-    'ecdsa-sha2-nistp256',
-    "${::sshecdsakey}\n"
-  ]
+  if $::sshecdsakey {
+    $ssh_key_concat = [
+      "${::fqdn},${::primary_ip}",
+      'ecdsa-sha2-nistp256',
+      "${::sshecdsakey}\n"
+    ]
+  }
+  elsif $::sshrsakey {
+    $ssh_key_concat = [
+      "${::fqdn},${::primary_ip}",
+      'ssh-rsa',
+      "${::sshrsakey}\n",
+    ]
+  }
+  else {
+    fail( 'Cannot find ecdsa, or rsa key to deploy for secure host checking' )
+  }
 
   if $sanity_check {
     $check_for = $sanity_check
