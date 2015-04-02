@@ -71,8 +71,6 @@ Set the zpr user home directory. Default is '/var/lib/zpr'
 Set the zpr user UID. Default is '50555'
 #### `gid`
 Set the zpr user GID. Default is '50555'
-#### `user_tag`
-Set the user tag for zpr_proxy user reference. Default is 'worker'
 #### `storage`
 Configure the default storage server.
 #### `worker_tag`
