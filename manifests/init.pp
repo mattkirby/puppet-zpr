@@ -5,7 +5,6 @@ class zpr (
   $home               = undef,
   $uid                = undef,
   $gid                = undef,
-  $user_tag           = undef,
   $storage            = undef,
   $worker_tag         = undef,
   $readonly_tag       = undef,
@@ -28,7 +27,6 @@ class zpr (
   $globals_home               = $home
   $globals_uid                = $uid
   $globals_gid                = $gid
-  $globals_user_tag           = $user_tag
   $globals_storage            = $storage
   $globals_worker_tag         = $worker_tag
   $globals_readonly_tag       = $readonly_tag

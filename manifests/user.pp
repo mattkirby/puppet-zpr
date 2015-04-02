@@ -6,7 +6,6 @@ class zpr::user (
   $home               = $zpr::params::home,
   $uid                = $zpr::params::uid,
   $gid                = $zpr::params::gid,
-  $user_tag           = $zpr::params::user_tag,
   $worker_tag         = $zpr::params::worker_tag,
   $env_tag            = $zpr::params::env_tag,
   $readonly_tag       = $zpr::params::readonly_tag,
