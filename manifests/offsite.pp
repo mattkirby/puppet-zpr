@@ -9,15 +9,15 @@ class zpr::offsite (
   include zpr::task_spooler
 
   if $env_tag {
-    File           <<| tag == $readonly_tag and tag == 'zpr_vol' and tag == $env_tag |>>
-    Mount          <<| tag == $readonly_tag and tag == 'zpr_vol' and tag == $env_tag |>> {
+    File  <<| tag == $readonly_tag and tag == 'zpr_vol' and tag == $env_tag |>>
+    Mount <<| tag == $readonly_tag and tag == 'zpr_vol' and tag == $env_tag |>> {
       options => 'ro'
     }
     Zpr::Duplicity <<| tag == $readonly_tag and tag == 'zpr_duplicity' and tag == $env_tag |>>
   }
   else {
-    File           <<| tag == $readonly_tag and tag == 'zpr_vol' |>>
-    Mount          <<| tag == $readonly_tag and tag == 'zpr_vol' |>> {
+    File  <<| tag == $readonly_tag and tag == 'zpr_vol' |>>
+    Mount <<| tag == $readonly_tag and tag == 'zpr_vol' |>> {
       options => 'ro'
     }
     Zpr::Duplicity <<| tag == $readonly_tag and tag == 'zpr_duplicity' |>>
