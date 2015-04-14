@@ -6,7 +6,7 @@ define zpr::rsync (
   $key_path       = '/var/lib/zpr/.ssh',
   $task_spooler   = '/usr/bin/tsp',
   $rsync          = '/usr/bin/rsync',
-  $rsync_options  = 'SahpE',
+  $rsync_options  = 'rlpgoDShpEi',
   $delete         = '--delete-after',
   $rsync_path     = 'sudo rsync',
   $user           = 'zpr_proxy',

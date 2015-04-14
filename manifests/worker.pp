@@ -5,19 +5,26 @@ class zpr::worker (
 ) inherits zpr::params {
 
   class { 'zpr::user': source_user => true }
+
   include zpr::backup_dir
   include zpr::task_spooler
 
   if $env_tag {
-    File   <<| tag == $worker_tag and tag == $env_tag and ( tag == 'zpr_rsync' or tag == 'zpr_vol' ) |>>
-    Mount  <<| tag == $worker_tag and tag == $env_tag and tag == 'zpr_vol'|>> { options => 'rw' }
-    Cron   <<| tag == $worker_tag and tag == $env_tag and tag == 'zpr_rsync' |>>
+    File  <<| tag == $worker_tag and tag == $env_tag and ( tag == 'zpr_rsync' or tag == 'zpr_vol' ) |>> {
+      ensure => undef
+    }
+    Mount <<| tag == $worker_tag and tag == $env_tag and tag == 'zpr_vol' |>> {
+      options => 'rw'
+    }
+    Cron  <<| tag == $worker_tag and tag == $env_tag and tag == 'zpr_rsync' |>>
     Concat::Fragment <<| tag == $worker_tag and tag == $env_tag and tag == 'zpr_sshkey' |>>
   }
   else {
-    File   <<| tag == $worker_tag and ( tag == 'zpr_rsync' or tag == 'zpr_vol' ) |>>
-    Mount  <<| tag == $worker_tag and tag == 'zpr_vol'|>> { options => 'rw' }
-    Cron   <<| tag == $worker_tag and tag == 'zpr_rsync' |>>
+    File  <<| tag == $worker_tag and ( tag == 'zpr_rsync' or tag == 'zpr_vol' ) |>> {
+      ensure => undef
+    }
+    Mount <<| tag == $worker_tag and tag == 'zpr_vol' |>> { options => 'rw' }
+    Cron  <<| tag == $worker_tag and tag == 'zpr_rsync' |>>
     Concat::Fragment <<| tag == $worker_tag and tag == 'zpr_sshkey' |>>
   }
 }

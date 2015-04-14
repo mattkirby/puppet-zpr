@@ -176,7 +176,7 @@ define zpr::job (
   $compression       = undef,
   $allow_ip          = undef,
   $share_nfs         = undef,
-  $target            = undef, #to override zfs::rotate title
+  $target            = undef,
   $rsync_options     = undef,
   $exclude           = undef,
   $env_tag           = $::current_environment,
@@ -186,10 +186,8 @@ define zpr::job (
 
   include zpr::user
 
-  case $title {
-    /( )/: {
-      fail("Backup resource titles cannot contain whitespace characters. Please remove whitespace characters from your backup resource titled ${title}")
-    }
+  if $title =~ /( )/ {
+    fail("Backup resource ${title} cannot contain whitespace characters")
   }
 
   if $snapshot {
@@ -215,7 +213,7 @@ define zpr::job (
 
     @@file { "/${vol_name}":
       owner => 'nobody',
-      group => 'nobody',
+      group => 'nogroup',
       mode  => '0777',
       tag   => [ $::current_environment, $storage, 'zpr_vol' ],
     }
@@ -223,8 +221,15 @@ define zpr::job (
 
   if $mount_vol {
     @@file { "${backup_dir}/${title}":
-      ensure => directory,
-      tag    => [ $::current_environment, $worker_tag, $readonly_tag , 'zpr_vol' ],
+      owner => 'nobody',
+      group => 'nogroup',
+      mode  => '0777',
+      tag   => [
+        $::current_environment,
+        $worker_tag,
+        $readonly_tag,
+        'zpr_vol'
+      ]
     }
 
     @@mount { "${backup_dir}/${title}":
@@ -234,7 +239,12 @@ define zpr::job (
       target  => '/etc/fstab',
       device  => "${storage}:/${vol_name}",
       require => File["${backup_dir}/${title}"],
-      tag     => [ $::current_environment, $worker_tag, $readonly_tag, 'zpr_vol' ]
+      tag     => [
+        $::current_environment,
+        $worker_tag,
+        $readonly_tag,
+        'zpr_vol'
+      ]
     }
   }
 
@@ -265,7 +275,11 @@ define zpr::job (
         key_id     => $gpg_key_id,
         keep       => $keep_s3,
         full_every => $full_every,
-        tag        => [ $::current_environment, $readonly_tag, 'zpr_duplicity' ],
+        tag        => [
+          $::current_environment,
+          $readonly_tag,
+          'zpr_duplicity'
+        ]
       }
     }
   }
@@ -276,7 +290,11 @@ define zpr::job (
       permissions => $permissions,
       security    => $security,
       zpool       => $zpool,
-      tag         => [ $::current_environment, $storage, 'zpr_share' ],
+      tag         => [
+        $::current_environment,
+        $storage,
+        'zpr_share'
+      ]
     }
   }
 }
