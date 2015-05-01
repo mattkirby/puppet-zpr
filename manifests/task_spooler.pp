@@ -24,6 +24,7 @@ class zpr::task_spooler (
 
   file_line { 'source .tsprc':
     ensure => present,
+    line   => $title,
     path   => "${home}/.profile"
   }
 
