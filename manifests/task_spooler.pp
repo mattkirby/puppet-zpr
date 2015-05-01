@@ -22,16 +22,16 @@ class zpr::task_spooler (
     ensure => $ensure
   }
 
+  file_line { 'source .tsprc':
+    ensure => present,
+    path   => "${home}/.profile"
+  }
+
   file {
     $tsp_dir:
       ensure => directory,
       owner  => $user,
       group  => $user;
-    "${home}/.profile":
-      ensure  => present,
-      owner   => $user,
-      group   => $user,
-      content => 'source .tsprc';
     "${home}/.tsprc":
       ensure  => present,
       owner   => $user,
