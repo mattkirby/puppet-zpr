@@ -38,6 +38,6 @@ class zpr::task_spooler (
       owner   => $user,
       group   => $user,
       mode    => '0500',
-      content => join( $tsp_options, '\n' )
+      content => join( $tsp_options, "\n" )
   }
 }
