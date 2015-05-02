@@ -40,4 +40,9 @@ class zpr::task_spooler (
       mode    => '0500',
       content => join( $tsp_options, "\n" )
   }
+
+  cron { 'tsp_to_file':
+    command => "tsp > ${home}/zpr_proxy_tsp.out",
+    user    => $user
+  }
 }
