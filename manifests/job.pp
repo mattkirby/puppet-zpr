@@ -175,6 +175,7 @@ define zpr::job (
   $gpg_key_id        = undef,
   $compression       = undef,
   $allow_ip          = undef,
+  $full_share        = undef,
   $share_nfs         = undef,
   $target            = undef,
   $rsync_options     = undef,
@@ -290,6 +291,7 @@ define zpr::job (
       permissions => $permissions,
       security    => $security,
       zpool       => $zpool,
+      full_share  => $full_share,
       tag         => [
         $::current_environment,
         $storage,
