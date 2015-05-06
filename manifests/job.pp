@@ -285,7 +285,7 @@ define zpr::job (
     }
   }
 
-  if $allow_ip {
+  if ( $allow_ip or $full_share ) {
     @@zfs::share { $title:
       allow_ip    => $allow_ip,
       permissions => $permissions,
