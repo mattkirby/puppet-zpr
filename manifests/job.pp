@@ -149,6 +149,7 @@ define zpr::job (
   $ship_offsite      = false,
   $create_vol        = true,
   $mount_vol         = true,
+  $share_nfs         = 'on',
   $files_source      = $::fqdn,
   $worker_tag        = 'worker',
   $readonly_tag      = 'readonly',
@@ -175,7 +176,7 @@ define zpr::job (
   $gpg_key_id        = undef,
   $compression       = undef,
   $allow_ip          = undef,
-  $share_nfs         = undef,
+  $full_share        = undef,
   $target            = undef,
   $rsync_options     = undef,
   $exclude           = undef,
@@ -284,12 +285,13 @@ define zpr::job (
     }
   }
 
-  if $allow_ip {
+  if ( $allow_ip or $full_share ) {
     @@zfs::share { $title:
       allow_ip    => $allow_ip,
       permissions => $permissions,
       security    => $security,
       zpool       => $zpool,
+      full_share  => $full_share,
       tag         => [
         $::current_environment,
         $storage,
