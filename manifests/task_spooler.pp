@@ -42,7 +42,7 @@ class zpr::task_spooler (
   }
 
   cron { 'tsp_to_file':
-    command => "tsp > ${home}/zpr_proxy_tsp.out",
+    command => "export TMPDIR=${tmpdir}; tsp > ${home}/zpr_proxy_tsp.out",
     user    => $user
   }
 }
