@@ -7,8 +7,6 @@ class zpr::task_spooler (
   $tsp_dir     = "${home}/task_spooler",
   $slots       = $zpr::params::slots,
   $maxfinished = $zpr::params::maxfinished,
-  $tmpdir      = $tsp_dir,
-  $savelist    = $tsp_dir
 ) inherits zpr::params {
 
   $tsp_options = [
@@ -42,7 +40,7 @@ class zpr::task_spooler (
   }
 
   cron { 'tsp_to_file':
-    command => "export TMPDIR=${tmpdir}; tsp > ${home}/zpr_proxy_tsp.out",
+    command => "export TMPDIR=${tsp_dir}; tsp > ${home}/zpr_proxy_tsp.out",
     user    => $user
   }
 }
