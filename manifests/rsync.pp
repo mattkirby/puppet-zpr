@@ -65,12 +65,19 @@ define zpr::rsync (
     $cat_cmd   = "cat ${permitted_commands}/${title}"
 
     $full_cmd = [
+      '/bin/bash -c',
+      '"source',
+      '/var/lib/zpr/.tsprc',
+      ';',
       $task_spooler,
       '/bin/bash -c',
-      '"export',
+      '\"export',
       "zpr_rsync_cmd=\\\"$(${cat_cmd})\\\"",
       ';',
-      "$(${cat_cmd} | tr -d '\\\\')\"",
+      "$(${cat_cmd}",
+      '|',
+      'tr -d',
+      "'\\\\')\\\"\""
     ]
 
     @@cron { "${title}_rsync_backup":
