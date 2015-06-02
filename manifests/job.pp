@@ -191,6 +191,9 @@ define zpr::job (
     fail("Backup resource ${title} cannot contain whitespace characters")
   }
 
+  $storage_tags = [ $::current_environment, $storage ]
+  $readonly_tags = [ $::current_environment, $worker_tag, 'zpr_vol' ]
+
   if $snapshot {
     @@zfs::snapshot { $title:
       target => $zpool,
@@ -198,7 +201,7 @@ define zpr::job (
       minute => $snapshot_minute,
       rhour  => $snapshot_r_hour,
       rmin   => $snapshot_r_minute,
-      tag    => [ $::current_environment, $storage, 'zpr_snapshot' ],
+      tag    => concat($storage_tags, 'zpr_snapshot')
     }
   }
 
@@ -209,56 +212,14 @@ define zpr::job (
       quota       => $quota,
       compression => $compression,
       sharenfs    => $share_nfs,
-      tag         => [ $::current_environment, $storage, 'zpr_vol' ],
+      tag         => concat($storage_tags, 'zpr_vol')
     }
 
     @@file { "/${vol_name}":
       owner => 'nobody',
       group => 'nogroup',
       mode  => '0777',
-      tag   => [ $::current_environment, $storage, 'zpr_vol' ],
-    }
-  }
-
-  if $mount_vol {
-    @@file { "${backup_dir}/${title}":
-      owner => 'nobody',
-      group => 'nogroup',
-      mode  => '0777',
-      tag   => [
-        $::current_environment,
-        $worker_tag,
-        $readonly_tag,
-        'zpr_vol'
-      ]
-    }
-
-    @@mount { "${backup_dir}/${title}":
-      ensure  => mounted,
-      atboot  => true,
-      fstype  => 'nfs',
-      target  => '/etc/fstab',
-      device  => "${storage}:/${vol_name}",
-      require => File["${backup_dir}/${title}"],
-      tag     => [
-        $::current_environment,
-        $worker_tag,
-        $readonly_tag,
-        'zpr_vol'
-      ]
-    }
-  }
-
-  if $collect_files {
-    zpr::rsync { $title:
-      source_url    => $files_source,
-      files         => $files,
-      dest_folder   => "${backup_dir}/${title}",
-      hour          => $rsync_hour,
-      minute        => $rsync_minute,
-      exclude       => $exclude,
-      rsync_options => $rsync_options,
-      worker_tag    => $worker_tag,
+      tag   => concat($storage_tags, 'zpr_vol')
     }
   }
 
@@ -276,12 +237,42 @@ define zpr::job (
         key_id     => $gpg_key_id,
         keep       => $keep_s3,
         full_every => $full_every,
-        tag        => [
-          $::current_environment,
-          $readonly_tag,
-          'zpr_duplicity'
-        ]
+        tag        => [ $::current_environment, $readonly_tag, 'zpr_duplicity' ]
       }
+      $ship_offsite_tags = concat($readonly_tags, $readonly_tag)
+    }
+  }
+  else { $ship_offsite_tags = $readonly_tags }
+
+  if $mount_vol {
+    @@file { "${backup_dir}/${title}":
+      owner => 'nobody',
+      group => 'nogroup',
+      mode  => '0777',
+      tag   => $ship_offsite_tags
+    }
+
+    @@mount { "${backup_dir}/${title}":
+      ensure  => mounted,
+      atboot  => true,
+      fstype  => 'nfs',
+      target  => '/etc/fstab',
+      device  => "${storage}:/${vol_name}",
+      require => File["${backup_dir}/${title}"],
+      tag     => $ship_offsite_tags
+    }
+  }
+
+  if $collect_files {
+    zpr::rsync { $title:
+      source_url    => $files_source,
+      files         => $files,
+      dest_folder   => "${backup_dir}/${title}",
+      hour          => $rsync_hour,
+      minute        => $rsync_minute,
+      exclude       => $exclude,
+      rsync_options => $rsync_options,
+      worker_tag    => $worker_tag,
     }
   }
 
@@ -292,11 +283,7 @@ define zpr::job (
       security    => $security,
       zpool       => $zpool,
       full_share  => $full_share,
-      tag         => [
-        $::current_environment,
-        $storage,
-        'zpr_share'
-      ]
+      tag         => concat($storage_tags, 'zpr_share')
     }
   }
 }
