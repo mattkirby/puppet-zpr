@@ -183,7 +183,13 @@ define zpr::job (
   $env_tag           = $::current_environment,
 ) {
 
-  $vol_name  = "${zpool}/${title}"
+  if $::fqdn {
+    $utitle = "${::fqdn}_${title}"
+  } else {
+    $utitle = "${::certname}_${title}"
+  }
+
+  $vol_name  = "${zpool}/${utitle}"
 
   include zpr::user
 
@@ -195,7 +201,7 @@ define zpr::job (
   $readonly_tags = [ $::current_environment, $worker_tag, 'zpr_vol' ]
 
   if $snapshot {
-    @@zfs::snapshot { $title:
+    @@zfs::snapshot { $utitle:
       target => $zpool,
       hour   => $snapshot_hour,
       minute => $snapshot_minute,
@@ -228,12 +234,12 @@ define zpr::job (
       fail('No key or target are set')
     }
     else {
-      @@zpr::duplicity { $title:
-        target     => "${s3_target}/${title}",
+      @@zpr::duplicity { $utitle:
+        target     => "${s3_target}/${utitle}",
         hour       => $duplicity_hour,
         minute     => $duplicity_minute,
         home       => $zpr_home,
-        files      => "${backup_dir}/${title}",
+        files      => "${backup_dir}/${utitle}",
         key_id     => $gpg_key_id,
         keep       => $keep_s3,
         full_every => $full_every,
@@ -245,29 +251,29 @@ define zpr::job (
   else { $ship_offsite_tags = $readonly_tags }
 
   if $mount_vol {
-    @@file { "${backup_dir}/${title}":
+    @@file { "${backup_dir}/${utitle}":
       owner => 'nobody',
       group => 'nogroup',
       mode  => '0777',
       tag   => $ship_offsite_tags
     }
 
-    @@mount { "${backup_dir}/${title}":
+    @@mount { "${backup_dir}/${utitle}":
       ensure  => mounted,
       atboot  => true,
       fstype  => 'nfs',
       target  => '/etc/fstab',
       device  => "${storage}:/${vol_name}",
-      require => File["${backup_dir}/${title}"],
+      require => File["${backup_dir}/${utitle}"],
       tag     => $ship_offsite_tags
     }
   }
 
   if $collect_files {
-    zpr::rsync { $title:
+    zpr::rsync { $utitle:
       source_url    => $files_source,
       files         => $files,
-      dest_folder   => "${backup_dir}/${title}",
+      dest_folder   => "${backup_dir}/${utitle}",
       hour          => $rsync_hour,
       minute        => $rsync_minute,
       exclude       => $exclude,
@@ -277,7 +283,7 @@ define zpr::job (
   }
 
   if ( $allow_ip or $full_share ) {
-    @@zfs::share { $title:
+    @@zfs::share { $utitle:
       allow_ip    => $allow_ip,
       permissions => $permissions,
       security    => $security,
