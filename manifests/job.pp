@@ -76,9 +76,6 @@
 # quota
 # Disk quota for zfs volumes. Default: 100G.
 #
-# permissions
-# Permissions for zfs volume access over nfs. Default: ro.
-#
 # security
 # Security for zfs volume access over nfs. Default: none.
 #
@@ -121,8 +118,14 @@
 # compression
 # Whether to enable compression on zfs volume. Default: gzip.
 #
-# allow_ip
-# IP address to permit access to the zfs volume over nfs
+# allow_ip_read
+# IP address to permit read access to the zfs volume
+#
+# allow_ip_read_default
+# Default IP address to permit read access
+#
+# allow_ip_write
+# IP address to permit write access to the zfs volume
 #
 # share_nfs
 # Whether to enable sharing over nfs.
@@ -139,48 +142,57 @@
 # env_tag
 # A tag to optionally limit a backup job to a particular environment.
 #
+# anon_user_id
+# A uid which, if set, sets the anon user value for zfs share
+#
+# nosub
+# Whether to enable the nosub zfs share feature
+#
 
 define zpr::job (
   $files,
   $storage,
   $zpool,
-  $ensure            = present,
-  $collect_files     = true,
-  $ship_offsite      = false,
-  $create_vol        = true,
-  $mount_vol         = true,
-  $share_nfs         = 'on',
-  $files_source      = $::fqdn,
-  $worker_tag        = 'worker',
-  $readonly_tag      = 'readonly',
-  $snapshot          = 'on',
-  $keep              = '15', # 14 snapshots
-  $keep_s3           = '8W',
-  $full_every        = '30D',
-  $backup_dir        = '/srv/backup',
-  $zpr_home          = '/var/lib/zpr',
-  $quota             = '100G',
-  $permissions       = 'ro',
-  $security          = 'none',
-  $hour              = '1',
-  $minute            = fqdn_rand(59),
-  $rsync_hour        = $hour,
-  $rsync_minute      = $minute,
-  $duplicity_hour    = $hour,
-  $duplicity_minute  = $minute,
-  $snapshot_hour     = $hour,
-  $snapshot_minute   = $minute,
-  $snapshot_r_hour   = $hour,
-  $snapshot_r_minute = $minute,
-  $s3_target         = undef,
-  $gpg_key_id        = undef,
-  $compression       = undef,
-  $allow_ip          = undef,
-  $full_share        = undef,
-  $target            = undef,
-  $rsync_options     = undef,
-  $exclude           = undef,
-  $env_tag           = $::current_environment,
+  $ensure                         = present,
+  $collect_files                  = true,
+  $ship_offsite                   = false,
+  $create_vol                     = true,
+  $mount_vol                      = true,
+  $share_nfs                      = 'on',
+  $files_source                   = $::fqdn,
+  $worker_tag                     = 'worker',
+  $readonly_tag                   = 'readonly',
+  $snapshot                       = 'on',
+  $keep                           = '15', # 14 snapshots
+  $keep_s3                        = '8W',
+  $full_every                     = '30D',
+  $backup_dir                     = '/srv/backup',
+  $zpr_home                       = '/var/lib/zpr',
+  $quota                          = '100G',
+  $security                       = 'none',
+  $hour                           = '1',
+  $minute                         = fqdn_rand(59),
+  $rsync_hour                     = $hour,
+  $rsync_minute                   = $minute,
+  $duplicity_hour                 = $hour,
+  $duplicity_minute               = $minute,
+  $snapshot_hour                  = $hour,
+  $snapshot_minute                = $minute,
+  $snapshot_r_hour                = $hour,
+  $snapshot_r_minute              = $minute,
+  $s3_target                      = undef,
+  $gpg_key_id                     = undef,
+  $compression                    = undef,
+  $allow_ip_read                  = undef,
+  $allow_ip_read_default          = undef,
+  $allow_ip_write                 = undef,
+  $full_share                     = undef,
+  $target                         = undef,
+  $rsync_options                  = undef,
+  $exclude                        = undef,
+  $env_tag                        = $::current_environment,
+  $anon_user_id                   = '50555',
+  $nosub                          = true
 ) {
 
   if $::fqdn {
@@ -252,10 +264,11 @@ define zpr::job (
 
   if $mount_vol {
     @@file { "${backup_dir}/${utitle}":
-      owner => 'nobody',
-      group => 'nogroup',
-      mode  => '0777',
-      tag   => $ship_offsite_tags
+      ensure => directory,
+      owner  => 'nobody',
+      group  => 'nogroup',
+      mode   => '0777',
+      tag    => $ship_offsite_tags
     }
 
     @@mount { "${backup_dir}/${utitle}":
@@ -282,14 +295,17 @@ define zpr::job (
     }
   }
 
-  if ( $allow_ip or $full_share ) {
+  if ( $allow_ip_read or $allow_ip_read_default or $allow_ip_write or $full_share ) {
     @@zfs::share { $utitle:
-      allow_ip    => $allow_ip,
-      permissions => $permissions,
-      security    => $security,
-      zpool       => $zpool,
-      full_share  => $full_share,
-      tag         => concat($storage_tags, 'zpr_share')
+      allow_ip_read         => $allow_ip_read,
+      allow_ip_read_default => $allow_ip_read_default,
+      allow_ip_write        => $allow_ip_write,
+      security              => $security,
+      zpool                 => $zpool,
+      full_share            => $full_share,
+      anon_user_id          => $anon_user_id,
+      nosub                 => $nosub,
+      tag                   => concat($storage_tags, 'zpr_share')
     }
   }
 }
