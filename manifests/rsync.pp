@@ -4,7 +4,7 @@ define zpr::rsync (
   $files,
   $dest_folder    = "/srv/backup/${title}",
   $key_path       = '/var/lib/zpr/.ssh',
-  $task_spooler   = '/usr/bin/tsp',
+  $task_spooler   = '/usr/bin/tsp -E',
   $rsync          = '/usr/bin/rsync',
   $rsync_options  = 'rlpgoDShpEi',
   $delete         = '--delete-after',

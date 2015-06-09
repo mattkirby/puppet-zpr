@@ -10,7 +10,7 @@ define zpr::duplicity (
   $keep           = '8W',
   $hour           = '1',
   $minute         = '10',
-  $task_spooler   = '/usr/bin/tsp',
+  $task_spooler   = '/usr/bin/tsp -E',
   $options        = undef
 ) {
 
