@@ -4,7 +4,7 @@ define zpr::rsync (
   $files,
   $dest_folder    = "/srv/backup/${title}",
   $key_path       = '/var/lib/zpr/.ssh',
-  $task_spooler   = '/usr/bin/tsp',
+  $task_spooler   = '/usr/bin/tsp -E',
   $rsync          = '/usr/bin/rsync',
   $rsync_options  = 'rlpgoDShpEi',
   $delete         = '--delete-after',
@@ -65,19 +65,12 @@ define zpr::rsync (
     $cat_cmd   = "cat ${permitted_commands}/${title}"
 
     $full_cmd = [
-      '/bin/bash -c',
-      '"source',
-      '/var/lib/zpr/.tsprc',
-      ';',
       $task_spooler,
       '/bin/bash -c',
-      '\"export',
+      '"export',
       "zpr_rsync_cmd=\\\"$(${cat_cmd})\\\"",
       ';',
-      "$(${cat_cmd}",
-      '|',
-      'tr -d',
-      "'\\\\')\\\"\""
+      "$(${cat_cmd} | tr -d '\\\\')\"",
     ]
 
     @@cron { "${title}_rsync_backup":

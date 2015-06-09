@@ -10,7 +10,7 @@ define zpr::duplicity (
   $keep           = '8W',
   $hour           = '1',
   $minute         = '10',
-  $task_spooler   = '/usr/bin/tsp',
+  $task_spooler   = '/usr/bin/tsp -E',
   $options        = undef
 ) {
 
@@ -64,18 +64,11 @@ define zpr::duplicity (
 
   $full        = "--full-if-older-than ${full_every} ${cmd_suffix}"
   $clean       = "remove-older-than ${keep} --force ${target}"
-  $source_var  = "/bin/bash -c \"source /var/lib/zpr/.tsprc ;"
   $tsp         = "${task_spooler} /bin/bash -c"
-  $base        = [
-    $source_var,
-    $tsp,
-    "'",
-    $environment_command,
-    $cmd_prefix
-  ]
+  $base        = [ $tsp, "'", $environment_command, $cmd_prefix ]
 
-  $full_cmd    = join( [ $base, $full, "'\"" ], ' ')
-  $clean_cmd   = join( [ $base, $clean, "'\"" ], ' ')
+  $full_cmd    = join( [ $base, $full, "'" ], ' ')
+  $clean_cmd   = join( [ $base, $clean, "'"], ' ')
 
   cron {
   # Run full backups as configured witht incremental in beetween
