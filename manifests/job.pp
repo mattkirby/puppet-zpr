@@ -296,16 +296,35 @@ define zpr::job (
   }
 
   if ( $allow_ip_read or $allow_ip_read_default or $allow_ip_write or $full_share ) {
+    if $allow_ip_read_default {
+      $allow_ips_read_default = any2array($allow_ip_read_default)
+    } else {
+      $allow_ips_read_default = []
+    }
+
+    if $allow_ip_read {
+      $allow_ips_read = any2array($allow_ip_read)
+    } else {
+      $allow_ips_read = []
+    }
+
+    $allow_read_ips_c = concat($allow_ips_read, $allow_ips_read_default)
+
+    if ! empty($allow_read_ips_c) {
+      $allow_read_ips = $allow_read_ips_c
+    } else {
+      $allow_read_ips = undef
+    }
+
     @@zfs::share { $utitle:
-      allow_ip_read         => $allow_ip_read,
-      allow_ip_read_default => $allow_ip_read_default,
-      allow_ip_write        => $allow_ip_write,
-      security              => $security,
-      zpool                 => $zpool,
-      full_share            => $full_share,
-      anon_user_id          => $anon_user_id,
-      nosub                 => $nosub,
-      tag                   => concat($storage_tags, 'zpr_share')
+      allow_ip_read  => $allow_read_ips,
+      allow_ip_write => $allow_ip_write,
+      security       => $security,
+      zpool          => $zpool,
+      full_share     => $full_share,
+      anon_user_id   => $anon_user_id,
+      nosub          => $nosub,
+      tag            => concat($storage_tags, 'zpr_share')
     }
   }
 }
