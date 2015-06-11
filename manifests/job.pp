@@ -148,6 +148,9 @@
 # nosub
 # Whether to enable the nosub zfs share feature
 #
+# prepend_title
+# Whether to make resource titles more unique by prepending certname
+#
 
 define zpr::job (
   $files,
@@ -192,13 +195,14 @@ define zpr::job (
   $exclude                        = undef,
   $env_tag                        = $::current_environment,
   $anon_user_id                   = '50555',
-  $nosub                          = true
+  $nosub                          = true,
+  $prepend_title                  = false
 ) {
 
-  if $::fqdn {
-    $utitle = "${::fqdn}_${title}"
-  } else {
+  if $prepend_title {
     $utitle = "${::certname}_${title}"
+  } else {
+    $utitle = $title
   }
 
   $vol_name  = "${zpool}/${utitle}"
