@@ -1,0 +1,16 @@
+#!/usr/bin/env bash
+set -e
+
+GPG=$(ps aux | grep [g]pg-agent | awk '$1 == <%= @uid %>' | awk '{print $2}')
+
+is_alive() {
+  if [[ -z $GPG ]]
+  then
+    exit 1
+  else
+    kill $GPG
+    exit 0
+  fi
+}
+
+is_alive

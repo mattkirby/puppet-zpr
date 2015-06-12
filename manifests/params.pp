@@ -34,4 +34,6 @@ class zpr::params inherits zpr{
   # GPG key data
   $gpg_passphrase = $globals_gpg_passphrase
   $gpg_key_grip   = $globals_gpg_key_grip
+  $gpg_cache_ttl  = pick($globals_gpg_cache_ttl, '864000')
+  $gpg_max_ttl    = pick($globals_gpg_max_ttl, $gpg_cache_ttl)
 }
