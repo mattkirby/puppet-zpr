@@ -22,6 +22,8 @@ class zpr (
   $aws_secret_key     = undef,
   $gpg_passphrase     = undef,
   $gpg_key_grip       = undef,
+  $gpg_cache_ttl      = undef,
+  $gpg_max_ttl        = undef,
   $duplicity_version  = undef,
 ) {
   $globals_user               = $user
@@ -46,5 +48,7 @@ class zpr (
   $globals_aws_secret_key     = $aws_secret_key
   $globals_gpg_passphrase     = $gpg_passphrase
   $globals_gpg_key_grip       = $gpg_key_grip
+  $globals_gpg_cache_ttl      = $gpg_cache_ttl
+  $globals_gpg_max_ttl        = $gpg_max_ttl
   $globals_duplicity_version  = $duplicity_version
 }
