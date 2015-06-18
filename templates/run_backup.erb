@@ -1,0 +1,38 @@
+#!/usr/bin/env bash
+set -e
+
+cmd=$1
+mount_path='<%= @backup_dir %>'
+cmd_path='<%= @permitted_commands %>'
+check_mount=$(stat -f -L -c %T ${mount_path}/${cmd} | sed 's/\///')
+cmd_="${cmd_path}/${cmd}"
+export zpr_rsync_cmd=$(cat $cmd_)
+
+cmd_empty() {
+  if [[ -z $cmd ]]
+  then
+    echo "No command was provided"
+    exit 1
+  fi
+}
+
+path_is_nfs() {
+  if [[ $check_mount != 'nfs' ]]
+  then
+    echo "Requested volume is not mounted"
+    exit 2
+  fi
+}
+
+run_cmd() {
+  /bin/bash -c \
+  "$(cat $cmd_ | tr -d '\\')"
+}
+
+main() {
+  cmd_empty
+  path_is_nfs
+  run_cmd
+}
+
+main
