@@ -13,12 +13,10 @@ def check_command():
     ssh_command = os.environ['SSH_ORIGINAL_COMMAND']
     commands_dir = '<%= @permitted_commands %>'
     commands_list = os.listdir(commands_dir)
-    static_commands = []
 
-    for command in commands_list:
-        static_commands.append(open('/'.join([ commands_dir, command])).read().replace("\\", ""))
+    static_command = open('{}/{}'.format(commands_dir, source_command.split('/')[-1])).read().strip()
 
-    if not source_command in static_commands:
+    if not source_command in static_command:
         sys.exit(1)
 
     allowed = [

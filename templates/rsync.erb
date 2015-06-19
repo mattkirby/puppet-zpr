@@ -1,0 +1,1 @@
+<%= @rsync %> -<%= @rsync_options %> <% if @delete %><%= @delete %> <% end %><% if @exclude %><%= @exclude_dir %> <% end %>-e \"ssh <%= @ssh_options_f %> -i <%= @key_path %>/<%= @key_name %>\" --rsync-path='<%= @rsync_path %>' <%= @user %>@<%= @source_url %>:<%= @source_files %> <%= @dest_folder %>
