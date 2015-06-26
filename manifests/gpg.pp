@@ -31,6 +31,7 @@ class zpr::gpg (
     command => "${home}/killgpg",
     user    => $user,
     weekday => '0',
-    hour    => '17'
+    hour    => '17',
+    minute  => '0'
   }
 }
