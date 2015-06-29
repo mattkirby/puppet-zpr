@@ -109,7 +109,7 @@
 # snapshot_r_minute
 # Snapshot rotation minute. Default: $minute
 #
-# s3_target
+# s3_destination
 # Target s3 bucket for offsite backups
 #
 # gpg_key_id
@@ -154,8 +154,6 @@
 
 define zpr::job (
   $files,
-  $storage,
-  $zpool,
   $ensure                = present,
   $collect_files         = true,
   $ship_offsite          = false,
@@ -183,21 +181,41 @@ define zpr::job (
   $snapshot_minute       = $minute,
   $snapshot_r_hour       = $hour,
   $snapshot_r_minute     = $minute,
-  $s3_target             = undef,
-  $gpg_key_id            = undef,
   $compression           = undef,
   $allow_ip_read         = undef,
-  $allow_ip_read_default = undef,
   $allow_ip_write        = undef,
   $full_share            = undef,
   $target                = undef,
   $rsync_options         = undef,
   $exclude               = undef,
-  $env_tag               = $::current_environment,
-  $anon_user_id          = '50555',
   $nosub                 = true,
   $prepend_title         = false
 ) {
+
+  include zpr::params
+  include zpr::user
+
+  $storage = $zpr::params::storage
+  $zpool   = $zpr::params::zpool
+
+  $worker_tag     = $zpr::params::worker_tag
+  $readonly_tag   = $zpr::params::readonly_tag
+  $backup_dir     = $zpr::params::backup_dir
+  $home           = $zpr::params::home
+  $anon_user_id   = $zpr::params::uid
+  $s3_destination = $zpr::params::s3_destination
+  $gpg_key_id     = $zpr::params::gpg_key_id
+  $env_tag        = $zpr::params::env_tag
+
+  if $allow_ip_read or $zpr::params::allow_ip_read {
+    $allow_read = pick($allow_ip_read, $zpr::params::allow_ip_read)
+  }
+
+  $allow_write = pick($allow_ip_write, $zpr::params::allow_ip_write)
+
+  if $ship_offsite {
+    $allow_ip_read_default = $zpr::params::allow_ip_read_default
+  }
 
   if $prepend_title {
     $utitle = "${::certname}_${title}"
@@ -206,8 +224,6 @@ define zpr::job (
   }
 
   $vol_name  = "${zpool}/${utitle}"
-
-  include zpr::user
 
   if $title =~ /( )/ {
     fail("Backup resource ${title} cannot contain whitespace characters")
@@ -246,17 +262,15 @@ define zpr::job (
   }
 
   if $ship_offsite {
-    if ( $gpg_key_id == undef ) or ( $s3_target == undef ) {
-      fail('No key or target are set')
+    if $s3_destination == undef {
+      fail('No target is set')
     }
     else {
       @@zpr::duplicity { $utitle:
-        target     => "${s3_target}/${utitle}",
+        target     => "${s3_destination}/${utitle}",
         hour       => $duplicity_hour,
         minute     => $duplicity_minute,
-        home       => $zpr_home,
         files      => "${backup_dir}/${utitle}",
-        key_id     => $gpg_key_id,
         keep       => $keep_s3,
         full_every => $full_every,
         tag        => [ $::current_environment, $readonly_tag, 'zpr_duplicity' ]
@@ -299,15 +313,15 @@ define zpr::job (
     }
   }
 
-  if ( $allow_ip_read or $allow_ip_read_default or $allow_ip_write or $full_share ) {
+  if ( $allow_read or $allow_ip_read_default or $allow_write or $full_share ) {
     if $allow_ip_read_default {
       $allow_ips_read_default = any2array($allow_ip_read_default)
     } else {
       $allow_ips_read_default = []
     }
 
-    if $allow_ip_read {
-      $allow_ips_read = any2array($allow_ip_read)
+    if $allow_read {
+      $allow_ips_read = any2array($allow_read)
     } else {
       $allow_ips_read = []
     }
@@ -322,7 +336,7 @@ define zpr::job (
 
     @@zfs::share { $utitle:
       allow_ip_read  => $allow_read_ips,
-      allow_ip_write => $allow_ip_write,
+      allow_ip_write => $allow_write,
       security       => $security,
       zpool          => $zpool,
       full_share     => $full_share,

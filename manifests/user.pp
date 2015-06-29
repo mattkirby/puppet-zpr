@@ -58,9 +58,7 @@ class zpr::user (
 
     $user_shell = '/bin/bash'
 
-    zpr::generate_ssh_key { $user:
-      home => $home
-    }
+    zpr::generate_ssh_key { $user: }
 
     @@ssh_authorized_key { $::hostname:
       ensure  => $ensure,

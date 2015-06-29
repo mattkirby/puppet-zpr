@@ -11,9 +11,12 @@ class zpr::params inherits zpr{
   $worker_tag         = pick($globals_worker_tag, 'worker')
   $readonly_tag       = pick($globals_readonly_tag, 'readonly')
   $storage            = $globals_storage
+  $zpool              = $global_zpool
   $env_tag            = $globals_env_tag
   $sanity_check       = $globals_sanity_check
   $permitted_commands = pick($globals_permitted_commands, "${home}/.ssh/permitted_commands")
+
+  # Configure storage
 
   $backup_dir        = pick($globals_backup_dir, '/srv/backup')
   $duplicity_version = pick($globals_duplicity_version, present)
@@ -31,10 +34,12 @@ class zpr::params inherits zpr{
   $aws_key_file   = pick($globals_aws_key_file, '.aws')
   $aws_access_key = $globals_aws_access_key
   $aws_secret_key = $globals_aws_secret_key
+  $s3_destination = $globals_s3_destination
 
   # GPG key data
   $gpg_passphrase = $globals_gpg_passphrase
   $gpg_key_grip   = $globals_gpg_key_grip
+  $gpg_key_id     = $globals_gpg_key_id
   $gpg_cache_ttl  = pick($globals_gpg_cache_ttl, '864000')
   $gpg_max_ttl    = pick($globals_gpg_max_ttl, $gpg_cache_ttl)
 }

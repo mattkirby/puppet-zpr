@@ -4,13 +4,11 @@ define zpr::rsync (
   $files,
   $dest_folder    = "/srv/backup/${title}",
   $key_path       = '/var/lib/zpr/.ssh',
-  $home           = '/var/lib/zpr',
   $task_spooler   = '/usr/bin/tsp -E',
   $rsync          = '/usr/bin/rsync',
   $rsync_options  = 'rlpgoDShpEi',
   $delete         = '--delete-after',
   $rsync_path     = 'sudo rsync',
-  $user           = 'zpr_proxy',
   $hour           = '0',
   $minute         = '15',
   $key_name       = 'id_rsa',
@@ -21,6 +19,10 @@ define zpr::rsync (
 ) {
 
   include zpr::rsync_cmd
+  include zpr::params
+
+  $user = $zpr::params::user
+  $home = $zpr::params::home
 
   $permitted_commands = "${key_path}/permitted_commands"
   $ssh_key            = "${key_path}/${key_name}"

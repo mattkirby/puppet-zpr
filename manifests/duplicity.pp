@@ -1,11 +1,7 @@
 define zpr::duplicity (
   $target,
-  $home,
-  $key_id,
   $files          = $name,
   $ensure         = present,
-  $user           = 'zpr_proxy',
-  $aws_key_file   = '.aws',
   $full_every     = '30D',
   $keep           = '8W',
   $hour           = '1',
@@ -18,14 +14,19 @@ define zpr::duplicity (
   include zpr::gpg
   include zpr::aws
   include zpr::task_spooler
+  include zpr::params
 
   # Set variables
 
+  $user            = $zpr::params::user
+  $home            = $zpr::params::home
+  $aws_key_file    = $zpr::params::aws_key_file
+  $gpg_key_id      = $zpr::params::gpg_key_id
   $gpg_agent_info  = "${home}/.gpg-agent-info"
   $duplicity       = '/usr/bin/duplicity'
   $default_options = [
-    "--encrypt-key ${key_id}",
-    "--sign-key ${key_id}",
+    "--encrypt-key ${gpg_key_id}",
+    "--sign-key ${gpg_key_id}",
     '--use-agent'
   ]
 

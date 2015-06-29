@@ -1,12 +1,15 @@
 # A class that creates ssh keys without passphrases
 define zpr::generate_ssh_key (
-  $home,
-  $user  = $title,
-  $group = $user,
   $path  = '/usr/bin',
   $bits  = '4096',
   $gen   = true
 ) {
+
+  include zpr::params
+
+  $user  = $zpr::params::user
+  $group = $zpr::params::group
+  $home  = $zpr::params::home
 
   $generate_key = "sudo -u ${user} ssh-keygen -t rsa -b ${bits} -N \"\" -f ${home}/.ssh/id_rsa"
 

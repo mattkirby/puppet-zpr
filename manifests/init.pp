@@ -6,6 +6,7 @@ class zpr (
   $uid                = undef,
   $gid                = undef,
   $storage            = undef,
+  $zpool              = undef,
   $worker_tag         = undef,
   $readonly_tag       = undef,
   $env_tag            = undef,
@@ -21,8 +22,10 @@ class zpr (
   $aws_key_file       = undef,
   $aws_access_key     = undef,
   $aws_secret_key     = undef,
+  $s3_destination     = undef,
   $gpg_passphrase     = undef,
   $gpg_key_grip       = undef,
+  $gpg_key_id         = undef,
   $gpg_cache_ttl      = undef,
   $gpg_max_ttl        = undef,
   $duplicity_version  = undef,
@@ -33,6 +36,7 @@ class zpr (
   $globals_uid                = $uid
   $globals_gid                = $gid
   $globals_storage            = $storage
+  $globals_zpool              = $zpool
   $globals_worker_tag         = $worker_tag
   $globals_readonly_tag       = $readonly_tag
   $globals_env_tag            = $env_tag
@@ -48,8 +52,10 @@ class zpr (
   $globals_aws_key_file       = $aws_key_file
   $globals_aws_access_key     = $aws_access_key
   $globals_aws_secret_key     = $aws_secret_key
+  $globals_s3_destination     = $s3_destination
   $globals_gpg_passphrase     = $gpg_passphrase
   $globals_gpg_key_grip       = $gpg_key_grip
+  $globals_gpg_key_id         = $gpg_key_id
   $globals_gpg_cache_ttl      = $gpg_cache_ttl
   $globals_gpg_max_ttl        = $gpg_max_ttl
   $globals_duplicity_version  = $duplicity_version
