@@ -15,6 +15,7 @@ class zpr (
   $permitted_commands = undef,
   $key_name           = undef,
   $tsp_pkg_name       = undef,
+  $lockfile_pkg_name  = undef,
   $slots              = undef,
   $maxfinished        = undef,
   $aws_key_file       = undef,
@@ -41,6 +42,7 @@ class zpr (
   $globals_permitted_commands = $permitted_commands
   $globals_key_name           = $key_name
   $globals_tsp_pkg_name       = $tsp_pkg_name
+  $globals_lockfile_pkg_name  = $lockfile_pkg_name
   $globals_slots              = $slots
   $globals_maxfinished        = $maxfinished
   $globals_aws_key_file       = $aws_key_file
