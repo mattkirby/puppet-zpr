@@ -13,33 +13,31 @@ def check_command():
     ssh_command = os.environ['SSH_ORIGINAL_COMMAND']
     commands_dir = '<%= @permitted_commands %>'
     commands_list = os.listdir(commands_dir)
+    command_title = source_command.split('/')[-1]
+    command_path = [commands_dir, command_title]
 
-    static_command = open('{}/{}'.format(commands_dir, source_command.split('/')[-1])).read().strip()
+    static_command = open('/'.join(command_path)).read().strip()
 
     if not source_command in static_command:
-        sys.exit(1)
+        sys.exit(2)
 
     allowed = [
         'sudo rsync --server --sender',
-        '.',
-        '^/.*/?',
         r'(<%= @check_for %>)',
     ]
     c_split = str(ssh_command).split()
 
     if not allowed[0] == ' '.join(c_split[:4]):
-        sys.exit(1)
-
-    if not allowed[1] == c_split[5]:
-        sys.exit(1)
+        sys.exit(3)
 
     for i in c_split[6:]:
-        if not re.compile(allowed[2]).findall(i):
-            sys.exit(1)
-        if re.compile(allowed[3]).findall(i):
-            sys.exit(1)
+        if re.compile(allowed[1]).findall(i):
+            sys.exit(4)
 
-    call(ssh_command, shell=True)
+    try:
+        call(ssh_command, shell=True)
+    except:
+        sys.exit(5)
 
 if __name__ == '__main__':
     check_command()
