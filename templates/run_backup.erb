@@ -51,5 +51,6 @@ main() {
 }
 
 trap "remove_lock ; exit 255" SIGINT SIGQUIT SIGTERM
+trap "remove_lock" EXIT
 
 main
