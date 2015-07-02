@@ -46,8 +46,17 @@ define zpr::rsync (
       }
     }
 
+    $rsync_cmd = [
+      $task_spooler,
+      '/bin/bash -c "',
+      "${home}/run_backup",
+      $title,
+      ';',
+      'time=$(date +%s)"'
+    ]
+
     @@cron { "${title}_rsync_backup":
-      command => "${task_spooler} ${home}/run_backup ${title}",
+      command => join($rsync_cmd, ' '),
       user    => $user,
       hour    => $hour,
       minute  => $minute,

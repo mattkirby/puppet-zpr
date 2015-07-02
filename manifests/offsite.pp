@@ -7,6 +7,7 @@ class zpr::offsite (
   include zpr::user
   include zpr::backup_dir
   include zpr::task_spooler
+  include zpr::lockfile_progs
 
   if $env_tag {
     File  <<| tag == $readonly_tag and tag == 'zpr_vol' and tag == $env_tag |>>

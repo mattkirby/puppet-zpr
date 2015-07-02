@@ -62,13 +62,14 @@ define zpr::duplicity (
 
   $environment_command = join( $environment_c, ' ')
 
-  $full        = "--full-if-older-than ${full_every} ${cmd_suffix}"
-  $clean       = "remove-older-than ${keep} --force ${target}"
+  $date        = 'time=$(date +%s)'
+  $full        = "--full-if-older-than ${full_every} ${cmd_suffix} ; ${date}"
+  $clean       = "remove-older-than ${keep} --force ${target} ; ${date}"
   $tsp         = "${task_spooler} /bin/bash -c"
-  $base        = [ $tsp, "'", $environment_command, $cmd_prefix ]
+  $base        = [ $tsp, '"', $environment_command, $cmd_prefix ]
 
-  $full_cmd    = join( [ $base, $full, "'" ], ' ')
-  $clean_cmd   = join( [ $base, $clean, "'"], ' ')
+  $full_cmd    = join( [ $base, $full, '"' ], ' ')
+  $clean_cmd   = join( [ $base, $clean, '"'], ' ')
 
   cron {
   # Run full backups as configured witht incremental in beetween

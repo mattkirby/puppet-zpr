@@ -22,9 +22,10 @@ class zpr::params inherits zpr{
   $pub_key  = $globals_pub_key
   $key_name = pick($globals_key_name, "${pub_key}_default")
 
-  $tsp_pkg_name = pick($globals_tsp_pkg_name, 'task-spooler')
-  $slots        = pick($globals_slots, '1')
-  $maxfinished  = pick($globals_maxfinished, '1500')
+  $tsp_pkg_name      = pick($globals_tsp_pkg_name, 'task-spooler')
+  $lockfile_pkg_name = pick($globals_lockfile_pkg_name, 'lockfile-progs')
+  $slots             = pick($globals_slots, '1')
+  $maxfinished       = pick($globals_maxfinished, '1500')
 
   # AWS access keys
   $aws_key_file   = pick($globals_aws_key_file, '.aws')

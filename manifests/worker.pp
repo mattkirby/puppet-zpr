@@ -8,6 +8,7 @@ class zpr::worker (
 
   include zpr::backup_dir
   include zpr::task_spooler
+  include zpr::lockfile_progs
 
   if $env_tag {
     File  <<| tag == $worker_tag and tag == $env_tag and tag == 'zpr_rsync' |>>
