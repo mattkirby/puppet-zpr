@@ -42,6 +42,13 @@ remove_lock() {
   rm -f ${mount_path}/${cmd}/zpr_rsync.lock
 }
 
+check_if_exit_3() {
+  if [[ $? -ne 3 ]]
+  then
+    remove_lock
+  fi
+}
+
 main() {
   cmd_empty
   path_is_nfs
@@ -51,6 +58,6 @@ main() {
 }
 
 trap "remove_lock ; exit 255" SIGINT SIGQUIT SIGTERM
-trap "remove_lock" EXIT
+trap "check_if_exit_3" EXIT
 
 main
