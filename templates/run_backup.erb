@@ -12,7 +12,7 @@ create_lock=$(lockfile-create -r 0 ${mount_path}/${cmd}/zpr_rsync &> /dev/null ;
 cmd_empty() {
   if [[ -z $cmd ]]
   then
-    echo "No command was provided"
+    >&2 echo "No command was provided"
     exit 1
   fi
 }
@@ -20,7 +20,7 @@ cmd_empty() {
 path_is_nfs() {
   if [[ $check_mount != 'nfs' ]]
   then
-    echo "Requested volume is not mounted"
+    >&2 echo "Requested volume is not mounted"
     exit 2
   fi
 }
@@ -28,7 +28,7 @@ path_is_nfs() {
 check_lockfile() {
   if [[ $create_lock -ne 0 ]]
   then
-    echo "A lock for $cmd exists"
+    >&2 echo "A lock for $cmd exists"
     exit 3
   fi
 }
@@ -42,6 +42,13 @@ remove_lock() {
   rm -f ${mount_path}/${cmd}/zpr_rsync.lock
 }
 
+check_if_exit_3() {
+  if [[ $? -ne 3 ]]
+  then
+    remove_lock
+  fi
+}
+
 main() {
   cmd_empty
   path_is_nfs
@@ -51,6 +58,6 @@ main() {
 }
 
 trap "remove_lock ; exit 255" SIGINT SIGQUIT SIGTERM
-trap "remove_lock" EXIT
+trap "check_if_exit_3" EXIT
 
 main
