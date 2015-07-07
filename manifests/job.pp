@@ -154,14 +154,15 @@ define zpr::job (
   $create_vol            = true,
   $mount_vol             = true,
   $files_source          = $::fqdn,
-  $worker_tag            = undef,
-  $readonly_tag          = undef,
+  $storage               = undef,
+  $worker                = undef,
+  $shipper               = undef,
   $snapshot              = 'on',
   $keep                  = '15', # 14 snapshots
   $keep_s3               = '8W',
   $full_every            = '30D',
-  $backup_dir            = undef,
-  $zpr_home              = undef,
+  $backup_dir            = undef, #toremove
+  $zpr_home              = undef, #toremove
   $quota                 = undef,
   $security              = 'none',
   $hour                  = '1',
@@ -174,7 +175,7 @@ define zpr::job (
   $snapshot_minute       = $minute,
   $snapshot_r_hour       = $hour,
   $snapshot_r_minute     = $minute,
-  $compression           = undef,
+  $compression           = 'on',
   $allow_ip_read         = undef,
   $allow_ip_write        = undef,
   $full_share            = undef,
@@ -188,11 +189,11 @@ define zpr::job (
   include zpr::params
   include zpr::user
 
-  $storage = $zpr::params::storage
-  $zpool   = $zpr::params::zpool
+  $storage_tag = pick($storage, $zpr::params::storage)
+  $zpool       = $zpr::params::zpool
 
-  $worker_tag     = $zpr::params::worker_tag
-  $readonly_tag   = $zpr::params::readonly_tag
+  $worker_tag     = pick($worker, $zpr::params::worker)
+  $readonly_tag   = pick($readonly, $zpr::params::readonly)
   $backup_dir     = $zpr::params::backup_dir
   $home           = $zpr::params::home
   $anon_user_id   = $zpr::params::uid
