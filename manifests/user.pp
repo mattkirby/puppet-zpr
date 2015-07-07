@@ -6,9 +6,9 @@ class zpr::user (
   $home               = $zpr::params::home,
   $uid                = $zpr::params::uid,
   $gid                = $zpr::params::gid,
-  $worker_tag         = $zpr::params::worker_tag,
+  $worker             = $zpr::params::worker,
   $env_tag            = $zpr::params::env_tag,
-  $readonly_tag       = $zpr::params::readonly_tag,
+  $shipper            = $zpr::params::shipper,
   $source_user        = $zpr::params::source_user,
   $key_name           = $zpr::params::key_name,
   $pub_key            = $zpr::params::pub_key,
@@ -65,7 +65,7 @@ class zpr::user (
       key     => $::zpr_ssh_pubkey,
       type    => 'ssh-rsa',
       user    => $user,
-      tag     => [ $env_tag, $worker_tag, 'zpr_ssh_authorized_key' ],
+      tag     => [ $env_tag, $worker, 'zpr_ssh_authorized_key' ],
       options => [
         "command=\"${wrapper}\"",
         'no-X11-forwarding',
@@ -92,7 +92,7 @@ class zpr::user (
       order   => 0
     }
   }
-  elsif $::hostname == $readonly_tag {
+  elsif $::hostname == $shipper {
     $user_shell = '/bin/bash'
   }
   else {
@@ -145,10 +145,10 @@ class zpr::user (
   @@concat::fragment { "${::fqdn}_ecdsakey":
     target  => $known_hosts,
     content => join( $ssh_key_concat, ' ' ),
-    tag     => [ $env_tag, $worker_tag, 'zpr_sshkey' ],
+    tag     => [ $env_tag, $worker, 'zpr_sshkey' ],
   }
 
-  Ssh_authorized_key <<| tag == $worker_tag and tag == 'zpr_ssh_authorized_key' |>> {
+  Ssh_authorized_key <<| tag == $worker and tag == 'zpr_ssh_authorized_key' |>> {
     require => User[$user]
   }
 

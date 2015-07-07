@@ -7,8 +7,8 @@ class zpr (
   $gid                = undef,
   $storage            = undef,
   $zpool              = undef,
-  $worker_tag         = undef,
-  $readonly_tag       = undef,
+  $worker             = undef,
+  $shipper            = undef,
   $env_tag            = undef,
   $backup_dir         = undef,
   $pub_key            = undef,
@@ -37,8 +37,8 @@ class zpr (
   $globals_gid                = $gid
   $globals_storage            = $storage
   $globals_zpool              = $zpool
-  $globals_worker_tag         = $worker_tag
-  $globals_readonly_tag       = $readonly_tag
+  $globals_worker             = $worker
+  $globals_shipper            = $shipper
   $globals_env_tag            = $env_tag
   $globals_backup_dir         = $backup_dir
   $globals_pub_key            = $pub_key

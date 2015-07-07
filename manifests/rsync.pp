@@ -13,7 +13,7 @@ define zpr::rsync (
   $minute         = '15',
   $key_name       = 'id_rsa',
   $ssh_options    = ['SendEnv zpr_rsync_cmd', 'BatchMode yes'],
-  $worker_tag     = undef,
+  $worker         = undef,
   $env_tag        = $::current_environment,
   $exclude        = undef
 ) {
@@ -62,7 +62,7 @@ define zpr::rsync (
       user    => $user,
       hour    => $hour,
       minute  => $minute,
-      tag     => [ $worker_tag, $env_tag, 'zpr_rsync'],
+      tag     => [ $worker, $env_tag, 'zpr_rsync'],
     }
 
     @@file { "${permitted_commands}/${title}":
@@ -70,7 +70,7 @@ define zpr::rsync (
       group   => $user,
       mode    => '0400',
       content => template('zpr/rsync.erb'),
-      tag     => [ $worker_tag, $env_tag, $source_url, 'zpr_rsync' ]
+      tag     => [ $worker, $env_tag, $source_url, 'zpr_rsync' ]
     }
   }
   else {

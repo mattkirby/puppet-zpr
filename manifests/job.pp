@@ -49,8 +49,8 @@
 # worker_tag
 # Hostname of worker to run rsync jobs. Useful if there are more than one. Default: worker.
 #
-# readonly_tag
-# Hostname of offsite worker. Useful if there are more than one. Default: worker.
+# shipper
+# Hostname of offsite worker. Useful if there are more than one. Default: shipper.
 #
 # snapshot
 # Optionally disable snapshot creation. Default: true.
@@ -193,7 +193,7 @@ define zpr::job (
   $zpool       = $zpr::params::zpool
 
   $worker_tag     = pick($worker, $zpr::params::worker)
-  $readonly_tag   = pick($readonly, $zpr::params::readonly)
+  $readonly_tag   = pick($shipper, $zpr::params::shipper)
   $backup_dir     = $zpr::params::backup_dir
   $home           = $zpr::params::home
   $anon_user_id   = $zpr::params::uid
