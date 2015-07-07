@@ -25,9 +25,6 @@
 # files:
 # Path to files or folders to backup.
 #
-# storage
-# FQDN for storage server.
-#
 # zpool
 # ZFS volume to create backup volumes within.
 #
@@ -69,9 +66,6 @@
 #
 # backup_dir
 # Where to mount backup volumes on workers. Default: /srv/backup.
-#
-# zpr_home
-# zpr_proxy home directory. Default: /var/lib/zpr
 #
 # quota
 # Disk quota for zfs volumes. Default: 100G.
@@ -159,17 +153,16 @@ define zpr::job (
   $ship_offsite          = false,
   $create_vol            = true,
   $mount_vol             = true,
-  $share_nfs             = 'on',
   $files_source          = $::fqdn,
-  $worker_tag            = 'worker',
-  $readonly_tag          = 'readonly',
+  $worker_tag            = undef,
+  $readonly_tag          = undef,
   $snapshot              = 'on',
   $keep                  = '15', # 14 snapshots
   $keep_s3               = '8W',
   $full_every            = '30D',
-  $backup_dir            = '/srv/backup',
-  $zpr_home              = '/var/lib/zpr',
-  $quota                 = '100G',
+  $backup_dir            = undef,
+  $zpr_home              = undef,
+  $quota                 = undef,
   $security              = 'none',
   $hour                  = '1',
   $minute                = fqdn_rand(59),
@@ -206,6 +199,7 @@ define zpr::job (
   $s3_destination = $zpr::params::s3_destination
   $gpg_key_id     = $zpr::params::gpg_key_id
   $env_tag        = $zpr::params::env_tag
+  $share_nfs      = 'on'
 
   if $allow_ip_read or $zpr::params::allow_ip_read {
     $allow_read = pick($allow_ip_read, $zpr::params::allow_ip_read)
