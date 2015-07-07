@@ -194,7 +194,7 @@ define zpr::job (
 
   $worker_tag     = pick($worker, $zpr::params::worker)
   $readonly_tag   = pick($shipper, $zpr::params::shipper)
-  $backup_dir     = $zpr::params::backup_dir
+  $backup_dir_p   = $zpr::params::backup_dir
   $home           = $zpr::params::home
   $anon_user_id   = $zpr::params::uid
   $s3_destination = $zpr::params::s3_destination
@@ -265,7 +265,7 @@ define zpr::job (
         target     => "${s3_destination}/${utitle}",
         hour       => $duplicity_hour,
         minute     => $duplicity_minute,
-        files      => "${backup_dir}/${utitle}",
+        files      => "${backup_dir_p}/${utitle}",
         keep       => $keep_s3,
         full_every => $full_every,
         tag        => [ $::current_environment, $readonly_tag, 'zpr_duplicity' ]
@@ -276,7 +276,7 @@ define zpr::job (
   else { $ship_offsite_tags = $readonly_tags }
 
   if $mount_vol {
-    @@file { "${backup_dir}/${utitle}":
+    @@file { "${backup_dir_p}/${utitle}":
       ensure => directory,
       owner  => 'nobody',
       group  => 'nogroup',
@@ -284,13 +284,13 @@ define zpr::job (
       tag    => $ship_offsite_tags
     }
 
-    @@mount { "${backup_dir}/${utitle}":
+    @@mount { "${backup_dir_p}/${utitle}":
       ensure  => mounted,
       atboot  => true,
       fstype  => 'nfs',
       target  => '/etc/fstab',
       device  => "${storage}:/${vol_name}",
-      require => File["${backup_dir}/${utitle}"],
+      require => File["${backup_dir_p}/${utitle}"],
       tag     => $ship_offsite_tags
     }
   }
@@ -299,7 +299,7 @@ define zpr::job (
     zpr::rsync { $utitle:
       source_url    => $files_source,
       files         => $files,
-      dest_folder   => "${backup_dir}/${utitle}",
+      dest_folder   => "${backup_dir_p}/${utitle}",
       hour          => $rsync_hour,
       minute        => $rsync_minute,
       exclude       => $exclude,
