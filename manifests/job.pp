@@ -304,7 +304,7 @@ define zpr::job (
       minute        => $rsync_minute,
       exclude       => $exclude,
       rsync_options => $rsync_options,
-      worker_tag    => $worker_tag,
+      worker        => $worker_tag,
     }
   }
 
