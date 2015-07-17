@@ -52,7 +52,7 @@ define zpr::rsync (
       "${home}/run_backup",
       $title,
       ';',
-      'time=$(date +%s)"'
+      'time=$(date +\%s)"'
     ]
 
     @@cron { "${title}_rsync_backup":
