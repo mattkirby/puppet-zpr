@@ -209,8 +209,8 @@ define zpr::job (
 
   include zpr::user
 
-  if $title =~ /( )/ {
-    fail("Backup resource ${title} cannot contain whitespace characters")
+  if $title =~ /( )|(=)/ {
+    fail("Backup resource ${title} cannot contain whitespace or special characters")
   }
 
   $storage_tags = [ $::current_environment, $storage ]
