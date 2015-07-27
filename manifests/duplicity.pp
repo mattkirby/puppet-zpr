@@ -62,11 +62,11 @@ define zpr::duplicity (
 
   $environment_command = join( $environment_c, ' ')
 
-  $date        = 'time=$(date +%s)'
-  $full        = "--full-if-older-than ${full_every} ${cmd_suffix} ; ${date}"
-  $clean       = "remove-older-than ${keep} --force ${target} ; ${date}"
+  $date        = 'time=$(date +\%s)'
+  $full        = "--full-if-older-than ${full_every} ${cmd_suffix}"
+  $clean       = "remove-older-than ${keep} --force ${target}"
   $tsp         = "${task_spooler} /bin/bash -c"
-  $base        = [ $tsp, '"', $environment_command, $cmd_prefix ]
+  $base        = [ $tsp, '"', $date, ';', $environment_command, $cmd_prefix ]
 
   $full_cmd    = join( [ $base, $full, '"' ], ' ')
   $clean_cmd   = join( [ $base, $clean, '"'], ' ')
