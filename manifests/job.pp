@@ -209,7 +209,7 @@ define zpr::job (
 
   include zpr::user
 
-  if $title =~ /(\s|=|,)/ {
+  if $title =~ /(\s|=|,|@)/ {
     fail("Backup resource ${title} cannot contain whitespace or special characters")
   }
 
