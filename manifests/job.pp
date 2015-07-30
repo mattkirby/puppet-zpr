@@ -223,6 +223,7 @@ define zpr::job (
       minute => $snapshot_minute,
       rhour  => $snapshot_r_hour,
       rmin   => $snapshot_r_minute,
+      keep   => $keep,
       tag    => concat($storage_tags, 'zpr_snapshot')
     }
   }
