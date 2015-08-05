@@ -144,7 +144,7 @@ class zpr::user (
     entry => "${user} ALL=(ALL) NOPASSWD:/usr/bin/rsync"
   }
 
-  @@concat::fragment { "${::fqdn}_ecdsakey":
+  @@concat::fragment { "${::certname}_ecdsakey":
     target  => $known_hosts,
     content => join( $ssh_key_concat, ' ' ),
     tag     => [ $env_tag, $worker_tag, 'zpr_sshkey' ],
