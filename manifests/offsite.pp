@@ -19,7 +19,7 @@ class zpr::offsite (
   else {
     File  <<| tag == $readonly_tag and tag == 'zpr_vol' |>>
     Mount <<| tag == $readonly_tag and tag == 'zpr_vol' |>> {
-      options => 'ro'
+      options => 'defaults,ro,sec=none'
     }
     Zpr::Duplicity <<| tag == $readonly_tag and tag == 'zpr_duplicity' |>>
   }
