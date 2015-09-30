@@ -8,7 +8,7 @@ define zpr::rsync (
   $task_spooler   = '/usr/bin/tsp -E',
   $rsync          = '/usr/bin/rsync',
   $rsync_options  = 'rlpgoDShpEi',
-  $delete         = '--delete-after',
+  $delete         = '--delete-after --delete-excluded',
   $rsync_path     = 'sudo rsync',
   $user           = 'zpr_proxy',
   $hour           = '0',
