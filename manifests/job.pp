@@ -199,21 +199,15 @@ define zpr::job (
   $prepend_title         = false
 ) {
 
+  include zpr::user
+
   if $prepend_title {
     $utitle = "${::certname}_${title}"
   } else {
     $utitle = $title
   }
 
-  if $env_tag {
-    $_env_tag = $env_tag
-  } else {
-    $_env_tag = $::zpr::params::env_tag
-  }
-
   $vol_name  = "${zpool}/${utitle}"
-
-  include zpr::user
 
   if $title =~ /(\s|=|,|@)/ {
     fail("Backup resource ${title} cannot contain whitespace or special characters")

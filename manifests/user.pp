@@ -67,7 +67,7 @@ class zpr::user (
       key     => $::zpr_ssh_pubkey,
       type    => 'ssh-rsa',
       user    => $user,
-      tag     => [ $env_tag, $worker_tag, 'zpr_ssh_authorized_key' ],
+      tag     => [ $worker_tag, 'zpr_ssh_authorized_key' ],
       options => [
         "command=\"${wrapper}\"",
         'no-X11-forwarding',
@@ -147,7 +147,7 @@ class zpr::user (
   @@concat::fragment { "${::certname}_ecdsakey":
     target  => $known_hosts,
     content => join( $ssh_key_concat, ' ' ),
-    tag     => [ $env_tag, $worker_tag, 'zpr_sshkey' ],
+    tag     => [ $worker_tag, 'zpr_sshkey' ],
   }
 
   Ssh_authorized_key <<| tag == $worker_tag and tag == 'zpr_ssh_authorized_key' |>> {
