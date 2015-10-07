@@ -219,8 +219,8 @@ define zpr::job (
     fail("Backup resource ${title} cannot contain whitespace or special characters")
   }
 
-  $storage_tags = [ $::current_environment, $storage ]
-  $readonly_tags = [ $::current_environment, $worker_tag, 'zpr_vol' ]
+  $storage_tags = [ $_env_tag, $storage ]
+  $readonly_tags = [ $_env_tag, $worker_tag, 'zpr_vol' ]
 
   if $snapshot {
     @@zfs::snapshot { $utitle:
@@ -266,7 +266,7 @@ define zpr::job (
         key_id     => $gpg_key_id,
         keep       => $keep_s3,
         full_every => $full_every,
-        tag        => [ $::current_environment, $readonly_tag, 'zpr_duplicity' ]
+        tag        => [ $_env_tag, $readonly_tag, 'zpr_duplicity' ]
       }
       $ship_offsite_tags = concat($readonly_tags, $readonly_tag)
     }
