@@ -46,12 +46,6 @@ define zpr::rsync (
       }
     }
 
-    if $env_tag {
-      $_env_tag = $env_tag
-    } else {
-      $_env_tag = $::zpr::params::env_tag
-    }
-
     $rsync_cmd = [
       $task_spooler,
       '/bin/bash -c',
@@ -68,7 +62,7 @@ define zpr::rsync (
       user    => $user,
       hour    => $hour,
       minute  => $minute,
-      tag     => [ $worker_tag, $_env_tag, 'zpr_rsync'],
+      tag     => [ $worker_tag, 'zpr_rsync'],
     }
 
     @@file { "${permitted_commands}/${title}":
@@ -76,7 +70,7 @@ define zpr::rsync (
       group   => $user,
       mode    => '0400',
       content => template('zpr/rsync.erb'),
-      tag     => [ $worker_tag, $_env_tag, $source_url, 'zpr_rsync' ]
+      tag     => [ $worker_tag, $source_url, 'zpr_rsync' ]
     }
   }
   else {
