@@ -17,6 +17,10 @@ class zpr::user (
   $wrapper            = '/usr/bin/zpr_wrapper.py',
 ) inherits zpr::params {
 
+  if $user == undef {
+    fail('::zpr::user parameter $user cannot be undef')
+  }
+
   $known_hosts = "${home}/.ssh/known_hosts"
 
   $check_for_elements = [
@@ -67,7 +71,7 @@ class zpr::user (
       key     => $::zpr_ssh_pubkey,
       type    => 'ssh-rsa',
       user    => $user,
-      tag     => [ $worker_tag, 'zpr_ssh_authorized_key' ],
+      tag     => delete_undef_values([ $worker_tag, 'zpr_ssh_authorized_key' ]),
       options => [
         "command=\"${wrapper}\"",
         'no-X11-forwarding',
@@ -147,7 +151,7 @@ class zpr::user (
   @@concat::fragment { "${::certname}_ecdsakey":
     target  => $known_hosts,
     content => join( $ssh_key_concat, ' ' ),
-    tag     => [ $worker_tag, 'zpr_sshkey' ],
+    tag     => delete_undef_values([ $worker_tag, 'zpr_sshkey' ]),
   }
 
   Ssh_authorized_key <<| tag == $worker_tag and tag == 'zpr_ssh_authorized_key' |>> {

@@ -62,7 +62,7 @@ define zpr::rsync (
       user    => $user,
       hour    => $hour,
       minute  => $minute,
-      tag     => [ $worker_tag, 'zpr_rsync'],
+      tag     => delete_undef_values([ $worker_tag, 'zpr_rsync']),
     }
 
     @@file { "${permitted_commands}/${title}":
@@ -70,7 +70,7 @@ define zpr::rsync (
       group   => $user,
       mode    => '0400',
       content => template('zpr/rsync.erb'),
-      tag     => [ $worker_tag, $source_url, 'zpr_rsync' ]
+      tag     => delete_undef_values([ $worker_tag, $source_url, 'zpr_rsync' ])
     }
   }
   else {

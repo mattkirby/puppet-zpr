@@ -213,8 +213,12 @@ define zpr::job (
     fail("Backup resource ${title} cannot contain whitespace or special characters")
   }
 
-  $storage_tags = [ $_env_tag, $storage ]
-  $readonly_tags = [ $_env_tag, $worker_tag, 'zpr_vol' ]
+  if $storage == undef {
+    fail("Zpr::Job[$title] parameter \$storage cannot be undef")
+  }
+
+  $storage_tags = [ $storage ]
+  $readonly_tags = delete_undef_values([ $worker_tag, 'zpr_vol' ])
 
   if $snapshot {
     @@zfs::snapshot { $utitle:
@@ -260,9 +264,9 @@ define zpr::job (
         key_id     => $gpg_key_id,
         keep       => $keep_s3,
         full_every => $full_every,
-        tag        => [ $_env_tag, $readonly_tag, 'zpr_duplicity' ]
+        tag        => delete_undef_values([ $readonly_tag, 'zpr_duplicity' ])
       }
-      $ship_offsite_tags = concat($readonly_tags, $readonly_tag)
+      $ship_offsite_tags = delete_undef_values(concat($readonly_tags, $readonly_tag))
     }
   }
   else { $ship_offsite_tags = $readonly_tags }
