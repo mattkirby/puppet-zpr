@@ -8,7 +8,7 @@ define zpr::rsync (
   $task_spooler   = '/usr/bin/tsp -E',
   $rsync          = '/usr/bin/rsync',
   $rsync_options  = 'rlpgoDShpEi',
-  $delete         = '--delete-after',
+  $delete         = '--delete-after --delete-excluded',
   $rsync_path     = 'sudo rsync',
   $user           = 'zpr_proxy',
   $hour           = '0',
@@ -16,7 +16,7 @@ define zpr::rsync (
   $key_name       = 'id_rsa',
   $ssh_options    = ['SendEnv zpr_rsync_cmd', 'BatchMode yes'],
   $worker_tag     = undef,
-  $env_tag        = $::current_environment,
+  $env_tag        = undef,
   $exclude        = undef
 ) {
 
@@ -62,7 +62,7 @@ define zpr::rsync (
       user    => $user,
       hour    => $hour,
       minute  => $minute,
-      tag     => [ $worker_tag, $env_tag, 'zpr_rsync'],
+      tag     => delete_undef_values([ $worker_tag, 'zpr_rsync']),
     }
 
     @@file { "${permitted_commands}/${title}":
@@ -70,7 +70,7 @@ define zpr::rsync (
       group   => $user,
       mode    => '0400',
       content => template('zpr/rsync.erb'),
-      tag     => [ $worker_tag, $env_tag, $source_url, 'zpr_rsync' ]
+      tag     => delete_undef_values([ $worker_tag, $source_url, 'zpr_rsync' ])
     }
   }
   else {

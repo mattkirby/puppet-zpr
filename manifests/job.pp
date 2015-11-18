@@ -193,11 +193,13 @@ define zpr::job (
   $target                = undef,
   $rsync_options         = undef,
   $exclude               = undef,
-  $env_tag               = $::current_environment,
+  $env_tag               = undef,
   $anon_user_id          = '50555',
   $nosub                 = true,
   $prepend_title         = false
 ) {
+
+  include zpr::user
 
   if $prepend_title {
     $utitle = "${::certname}_${title}"
@@ -207,14 +209,16 @@ define zpr::job (
 
   $vol_name  = "${zpool}/${utitle}"
 
-  include zpr::user
-
   if $title =~ /(\s|=|,|@)/ {
     fail("Backup resource ${title} cannot contain whitespace or special characters")
   }
 
-  $storage_tags = [ $::current_environment, $storage ]
-  $readonly_tags = [ $::current_environment, $worker_tag, 'zpr_vol' ]
+  if $storage == undef {
+    fail("Zpr::Job[$title] parameter \$storage cannot be undef")
+  }
+
+  $storage_tags = [ $storage ]
+  $readonly_tags = delete_undef_values([ $worker_tag, 'zpr_vol' ])
 
   if $snapshot {
     @@zfs::snapshot { $utitle:
@@ -260,9 +264,9 @@ define zpr::job (
         key_id     => $gpg_key_id,
         keep       => $keep_s3,
         full_every => $full_every,
-        tag        => [ $::current_environment, $readonly_tag, 'zpr_duplicity' ]
+        tag        => delete_undef_values([ $readonly_tag, 'zpr_duplicity' ])
       }
-      $ship_offsite_tags = concat($readonly_tags, $readonly_tag)
+      $ship_offsite_tags = delete_undef_values(concat($readonly_tags, $readonly_tag))
     }
   }
   else { $ship_offsite_tags = $readonly_tags }

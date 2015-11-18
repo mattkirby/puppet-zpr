@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -e
 
-GPG=$(ps aux | grep [g]pg-agent | awk '$1 == <%= @uid %>' | awk '{print $2}')
+GPG=$(ps aux | grep "[g]pg-agent --allow-preset-passphrase" | awk '$1 == <%= @uid %> {print $2}')
 
 is_alive() {
   if [[ -z $GPG ]]

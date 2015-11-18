@@ -14,10 +14,5 @@ class zpr::rsync_cmd (
     content => template('zpr/run_backup.erb')
   }
 
-  if $env_tag {
-    File <<| tag == $::fqdn and tag == 'zpr_rsync' and tag == $env_tag |>>
-  }
-  else {
-    File <<| tag == $::fqdn and tag == 'zpr_rsync' |>>
-  }
+  File <<| tag == $::fqdn and tag == 'zpr_rsync' |>>
 }
