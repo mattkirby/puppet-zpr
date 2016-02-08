@@ -4,7 +4,15 @@ class zpr::duplicity_pkg (
   $pkg_name = 'duplicity'
 ) inherits zpr::params {
 
-  package { $pkg_name:
-    ensure => $ensure
+  case $::operatingsystem {
+    'Debian': { $boto = 'python-boto' }
+    default:  { $boto = 'python-boto' }
+  }
+
+  package {
+    $pkg_name:
+      ensure => $ensure;
+    $boto:
+      ensure => present
   }
 }

@@ -140,7 +140,12 @@ class zpr::user (
       owner   => $user,
       group   => $user,
       mode    => '0500',
-      content => template('zpr/ssh_forced_commands_wrapper.py.erb')
+      content => template('zpr/ssh_forced_commands_wrapper.py.erb');
+    "${home}/.profile":
+      ensure => present,
+      owner  => $user,
+      group  => $user,
+      mode   => '0644'
   }
 
   ssh::allowgroup { $group: }
